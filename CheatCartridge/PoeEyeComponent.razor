@@ -1,0 +1,192 @@
+@namespace CheatCartridge
+@using EyeAuras.Roxy.Controls
+@using PoeShared.Blazor.Controls
+@using PoeShared.Blazor
+@using BlazorComponentUtilities
+@using PoeShared.Blazor.Wpf.Services
+@inherits BlazorReactiveComponent<BotBrain>
+
+@{
+    var formClass = new CssBuilder("d-grid gap-1 overflow-none mt-1 p-1");
+    formClass.AddClass(DataContext.IsExpanded ? "bg-dark border border-1" : "");
+}
+
+<div class="@formClass overflow-none" style="height: calc(100% - 1em); grid-template-rows: auto auto auto auto 1fr auto">
+    @if (!DataContext.IsExpanded)
+    {
+        <div class="w-100 p-1" style="visibility: hidden;">&nbsp;</div>
+    }
+    else
+    {
+        <div></div>
+    }
+
+    <div class="d-flex gap-1 align-items-center mb-1">
+        <ToggleButton @bind-IsChecked="@DataContext.IsExpanded" Class="btn btn-secondary btn-small">
+            <i class="fa-solid fa-cog"></i>
+        </ToggleButton>
+
+        <ToggleButton @bind-IsChecked="@DataContext.AutoHealth" Class="btn btn-secondary btn-small">
+            <i class="fa text-danger">🧪</i>
+        </ToggleButton>
+
+        <ToggleButton @bind-IsChecked="@DataContext.AutoMana" Class="btn btn-secondary btn-small">
+            <i class="fa text-primary">🧪</i>
+        </ToggleButton>
+
+        <ToggleButton @bind-IsChecked="@DataContext.AutoEnergyShield" Class="btn btn-secondary btn-small">
+            <i class="fa text-info">🧪</i>
+        </ToggleButton>
+
+        <span class="flex-grow-1"></span>
+
+        @if (DataContext.IsExpanded)
+        {
+            <ReactiveButton Class="btn btn-outline-secondary p-0 m-0 px-1 rounded-0 border-0"
+                            CommandEx="@(BlazorContentControlAccessor.Control.OpenDevToolsCommand)">
+                <i class="fa fa-bug"></i>
+            </ReactiveButton>
+            <ReactiveButton Class="btn btn-outline-secondary p-0 m-0 px-1 rounded-0 border-0"
+                            Command="@(() => ProcessUtils.SelectFileOrFolder(new FileInfo(DataContext.ConfigFilePath.FullName)))">
+                <i class="fa fa-folder"></i>
+            </ReactiveButton>
+        }
+
+    </div>
+
+    @if (DataContext.IsExpanded)
+    {
+        <div class="@($"d-grid gap-1 align-items-center {(DataContext.AutoHealth ? "" : "opacity-50")}")" style="grid-template-columns: 1fr auto; grid-template-rows: auto auto">
+            <ReactiveSection
+                DebounceTime="@(TimeSpan.FromMilliseconds(50))"
+                Class="w-100"
+                Trackers="@(new ReactiveTrackerList().With(this.WhenAnyValue(x => x.DataContext.HealthPercentage, x => x.DataContext.HealthCurrent, x => x.DataContext.HealthMax)))">
+                <div class="progress position-relative">
+                    <div class="progress-bar bg-danger" style="width: @(DataContext.HealthPercentage.ToString(System.Globalization.CultureInfo.InvariantCulture))%">
+                    </div>
+                    <div class="position-absolute w-100 text-center" style="top: 50%; transform: translateY(-50%);">
+                        @($"{DataContext.HealthCurrent}/{DataContext.HealthMax} - {DataContext.HealthPercentage:F0}%")
+                    </div>
+                </div>
+            </ReactiveSection>
+
+            <span class="d-grid gap-1" style="grid-template-columns: 1fr auto">
+                <ReactiveSection
+                    Trackers="@(new ReactiveTrackerList().With(this.WhenAnyValue(x => x.DataContext.MinHealthPotionPercentage)))">
+                    <input type="range" class="form-range"
+                           value="@((int) DataContext.MinHealthPotionPercentage)"
+                           onchange="@((ChangeEventArgs x) => DataContext.MinHealthPotionPercentage = x.Value == null ? 0 : Convert.ToDouble(x.Value))">
+                    <span>@($"{DataContext.MinHealthPotionPercentage:F0}%")</span>
+                </ReactiveSection>
+            </span>
+
+            <span style="grid-column: 2; grid-row: 1 / span 2;">
+                <HotkeySelector @bind-Hotkey="@DataContext.HealthPotionKey" IsCompact="true"/>
+            </span>
+        </div>
+
+        <div class="@($"d-grid gap-1 align-items-center {(DataContext.AutoMana ? "" : "opacity-50")}")" style="grid-template-columns: 1fr auto; grid-template-rows: auto auto">
+            <ReactiveSection
+                DebounceTime="@(TimeSpan.FromMilliseconds(50))"
+                Class="w-100"
+                Trackers="@(new ReactiveTrackerList().With(this.WhenAnyValue(x => x.DataContext.ManaPercentage, x => x.DataContext.ManaCurrent, x => x.DataContext.ManaMax)))">
+                <div class="progress position-relative">
+                    <div class="progress-bar bg-primary" style="width: @(DataContext.ManaPercentage.ToString(System.Globalization.CultureInfo.InvariantCulture))%">
+                    </div>
+                    <div class="position-absolute w-100 text-center" style="top: 50%; transform: translateY(-50%);">
+                        @($"{DataContext.ManaCurrent}/{DataContext.ManaMax} - {DataContext.ManaPercentage:F0}%")
+                    </div>
+                </div>
+            </ReactiveSection>
+            <span class="d-grid gap-1" style="grid-template-columns: 1fr auto">
+                <ReactiveSection
+                    Trackers="@(new ReactiveTrackerList().With(this.WhenAnyValue(x => x.DataContext.MinManaPotionPercentage)))">
+                    <input type="range" class="form-range"
+                           value="@((int) DataContext.MinManaPotionPercentage)"
+                           onchange="@((ChangeEventArgs x) => DataContext.MinManaPotionPercentage = x.Value == null ? 0 : Convert.ToDouble(x.Value))">
+                    <span>@($"{DataContext.MinManaPotionPercentage:F0}%")</span>
+                </ReactiveSection>
+            </span>
+
+            <span style="grid-column: 2; grid-row: 1 / span 2;">
+                <HotkeySelector @bind-Hotkey="@DataContext.ManaPotionKey" IsCompact="true"/>
+            </span>
+        </div>
+
+
+        <div class="@($"d-grid gap-1 align-items-center {(DataContext.AutoEnergyShield ? "" : "opacity-50")}")" style="grid-template-columns: 1fr auto; grid-template-rows: auto auto">
+            <ReactiveSection
+                DebounceTime="@(TimeSpan.FromMilliseconds(50))"
+                Class="w-100"
+                Trackers="@(new ReactiveTrackerList().With(this.WhenAnyValue(x => x.DataContext.EnergyShieldPercentage, x => x.DataContext.EnergyShieldCurrent, x => x.DataContext.EnergyShieldMax)))">
+                <div class="progress position-relative">
+                    <div class="progress-bar bg-info" style="width: @(DataContext.EnergyShieldPercentage.ToString(System.Globalization.CultureInfo.InvariantCulture))%">
+                    </div>
+                    <div class="position-absolute w-100 text-center" style="top: 50%; transform: translateY(-50%);">
+                        @($"{DataContext.EnergyShieldCurrent}/{DataContext.EnergyShieldMax} - {DataContext.EnergyShieldPercentage:F0}%")
+                    </div>
+                </div>
+            </ReactiveSection>
+            <span class="d-grid gap-1" style="grid-template-columns: 1fr auto">
+                <ReactiveSection
+                    Trackers="@(new ReactiveTrackerList().With(this.WhenAnyValue(x => x.DataContext.MinEnergyShieldPotionPercentage)))">
+                    <input type="range" class="form-range"
+                           value="@((int) DataContext.MinEnergyShieldPotionPercentage)"
+                           onchange="@((ChangeEventArgs x) => DataContext.MinEnergyShieldPotionPercentage = x.Value == null ? 0 : Convert.ToDouble(x.Value))">
+                    <span>@($"{DataContext.MinEnergyShieldPotionPercentage:F0}%")</span>
+                </ReactiveSection>
+            </span>
+
+            <span style="grid-column: 2; grid-row: 1 / span 2;">
+                <HotkeySelector @bind-Hotkey="@DataContext.EnergyShieldPotionKey" IsCompact="true"/>
+            </span>
+        </div>
+
+        <span></span>
+
+        @if (ShowFpsEditor)
+        {
+            <div class="d-grid align-items-center gap-2" style="grid-template-columns: auto 1fr auto">
+                <ReactiveSection
+                    Trackers="@(new ReactiveTrackerList().With(this.WhenAnyValue(x => x.DataContext.TargetFps)))">
+                    <span>Target FPS</span>
+                    <input type="range" class="form-range"
+                           min="1"
+                           max="1000"
+                           value="@((int) DataContext.TargetFps)"
+                           onchange="@((ChangeEventArgs x) => DataContext.TargetFps = x.Value == null ? 0 : Convert.ToDouble(x.Value))">
+                </ReactiveSection>
+                <span>@($"{DataContext.TargetFps:F0}")</span>
+            </div>
+        }
+
+        <ReactiveSection
+            DebounceTime="@(TimeSpan.FromMilliseconds(1000))"
+            Class="w-100"
+            Trackers="@(new ReactiveTrackerList().With(this.WhenAnyValue(x => x.DataContext.FrameTime, x => x.DataContext.IsEnabled)))">
+            <div class="d-grid gap-1 align-items-center" style="grid-template-columns: 1fr 1fr auto">
+                @if (DataContext.IsEnabled)
+                {
+                    <span>@($"FrameTime: {DataContext.FrameTime.Avg:F0}ms")</span>
+                    <span class="d-flex align-items-center">
+                        <span style="min-width: 4em;">@($"FPS: {(1000 / DataContext.FrameTime.Avg):F0}")</span>
+                        <ToggleButton @bind-IsChecked="@ShowFpsEditor" Class="btn btn-secondary btn-small mx-1">
+                            <i class="fa-solid fa-cog"></i>
+                        </ToggleButton>
+                    </span>
+                    <span class="text-success">Working</span>
+                }
+                else
+                {
+                    <span class="text-warning">Paused</span>
+                }
+            </div>
+        </ReactiveSection>
+    }
+
+
+</div>
+
+@code {
+    [Inject] public IBlazorContentControlAccessor BlazorContentControlAccessor { get; init; }
+}

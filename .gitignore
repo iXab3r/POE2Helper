@@ -1,0 +1,13 @@
+.g.
+.git
+.idea
+.bak
+.tmp
+.vs
+/storage.v1/
+*_wpftmp*
+*.backup
+[Bb]in/
+[Bb]in */
+[Bb]in.*/
+[Oo]bj/
