@@ -6,10 +6,13 @@ namespace CheatCartridge.GameHelper.RemoteObjects.States;
 
 public class InGameState : MemoryObjectBase
 {
-    public InGameState(IMemory memory)
+    public IFluentLog Log { get; }
+
+    public InGameState(IMemory memory, IFluentLog log)
         : base(memory)
     {
-        CurrentAreaInstance = new AreaInstance(memory);
+        Log = log;
+        CurrentAreaInstance = new AreaInstance(memory, log);
     }
     
     public AreaInstance CurrentAreaInstance { get; }
@@ -21,6 +24,10 @@ public class InGameState : MemoryObjectBase
 
     protected override void UpdateData(bool hasAddressChanged)
     {
+        if (hasAddressChanged)
+        {
+            Log.Info($"InGameState Address changed to: {Address.ToHexadecimal()}");
+        }
         var data = Memory.Read<InGameStateOffset>(Address);
         CurrentAreaInstance.Address = data.AreaInstanceData;
     }

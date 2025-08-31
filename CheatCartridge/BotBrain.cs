@@ -275,15 +275,15 @@ public sealed class BotBrain : DisposableReactiveObject
 
                 if (!IsEnabled)
                 {
-                    using var _ = new ForcedDelayBlock(TimeSpan.FromSeconds(1));
+                    linkedCts.Token.Sleep(5000);
                     continue;
                 }
 
                 var targetProcessId = WinActiveTrigger.ActiveWindow?.ProcessId;
                 if (targetProcessId == null)
                 {
-                    using var _ = new ForcedDelayBlock(TimeSpan.FromSeconds(5));
                     Log.Warn("Path Of Exile 2 client not found");
+                    linkedCts.Token.Sleep(5000);
                     continue;
                 }
 
@@ -292,7 +292,6 @@ public sealed class BotBrain : DisposableReactiveObject
                 
                 using var process = 
                     EyeAuras.Memory.LocalProcess.ByProcessId(targetProcessId.Value); //uses naive RPM under the hood
-                    //EyeAuras.Memory.MPFS.LCProcess.ByProcessId(targetProcessId.Value, "-device", @"pmem", "-printf", "-v"); //uses WinPMEM driver
                 Log.Info($"Found Path Of Exile Process: {process}");
                 
                 var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
@@ -303,8 +302,8 @@ public sealed class BotBrain : DisposableReactiveObject
             }
             catch (Exception ex)
             {
-                using var _ = new ForcedDelayBlock(TimeSpan.FromSeconds(5));
                 Log.Error("Exception occurred", ex);
+                linkedCts.Token.Sleep(5000);
             }
         }
 
@@ -384,11 +383,17 @@ public sealed class BotBrain : DisposableReactiveObject
         ManaPotionKey = hotkeyConverter.ConvertFromString(config.ManaPotionKey ?? string.Empty);
         EnergyShieldPotionKey = hotkeyConverter.ConvertFromString(config.EnergyShieldPotionKey ?? string.Empty);
         TargetFps = config.TargetFps;
-        IsExpanded = config.IsExpanded;
 
         Window.Left = config.WindowBounds.Left;
         Window.Top = config.WindowBounds.Top;
         ExpandedWindowSize = config.WindowBounds.Size;
+        
+        IsExpanded = config.IsExpanded;
+        if (IsExpanded)
+        {
+            Window.Width = config.WindowBounds.Width;
+            Window.Height = config.WindowBounds.Height;
+        }
     }
 
     private void LoadConfigFromFile()

@@ -18,7 +18,7 @@ public class GameStates : MemoryObjectBase
         : base(memory)
     {
         Log = log;
-        InGameStateObject = new InGameState(Memory);
+        InGameStateObject = new InGameState(Memory, log);
     }
     
     public IFluentLog Log { get; }
@@ -32,19 +32,30 @@ public class GameStates : MemoryObjectBase
         if (hasAddressChanged)
         {
             myStaticObj = Memory.Read<GameStateStaticOffset>(Address);
-            Log.Info($"Loaded static Game offset: {myStaticObj.GameState.ToHexadecimal()} using Base {Address.ToHexadecimal()}");
+            Log.Info($"Loaded state offsets {Address.ToHexadecimal()}, current state struct is @ {myStaticObj.GameState.ToHexadecimal()}");
             
             var data = Memory.Read<GameStateOffset>(myStaticObj.GameState);
             for (var i = 0; i < GameStateBuffer.TOTAL_STATES; i++)
             {
                 allStates[data.States[i].X] = (GameStateTypes)i;
             }
+            Log.Info($"Loaded game states");
+            RefreshCurrentState(data);
+            Log.Info($"CurrentState @ {currentStateAddress.ToHexadecimal()}: {data.States.GetStateType(currentStateAddress)}");
 
-            InGameStateObject.Address = data.States[4].X;
+            InGameStateObject.Address = data.States[(int)GameStateTypes.InGameState].X;
+            Log.Info($"Assigned game states ptrs");
         }
         else
         {
             var data = Memory.Read<GameStateOffset>(myStaticObj.GameState);
+            RefreshCurrentState(data);
+        }
+
+        return;
+
+        void RefreshCurrentState(GameStateOffset data)
+        {
             var cStateAddr = Memory.Read<IntPtr>(data.CurrentStatePtr.Last - 0x10); // Get 2nd-last ptr.
             if (cStateAddr != IntPtr.Zero && cStateAddr != currentStateAddress)
             {

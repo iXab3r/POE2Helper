@@ -15,14 +15,16 @@ namespace CheatCartridge.GameHelper.RemoteObjects.States.InGameStateObjects;
 /// </summary>
 public class Entity : MemoryObjectBase
 {
+    public IFluentLog Log { get; }
     private static readonly int MaxComponentsInAnEntity = 50;
 
     private readonly ConcurrentDictionary<string, IntPtr> componentAddresses = new();
     private readonly ConcurrentDictionary<string, ComponentBase> componentCache = new();
 
-    public Entity(IMemory memory)
+    public Entity(IMemory memory, IFluentLog log)
         : base(memory)
     {
+        Log = log;
         Path = string.Empty;
         Id = 0;
         IsValid = false;
@@ -108,15 +110,18 @@ public class Entity : MemoryObjectBase
                 return false;
             }
 
-            var lookupPtr = Memory.Read<ComponentLookUpStruct>(
-                entityDetails.ComponentLookUpPtr);
+            if (entityDetails.ComponentLookUpPtr == IntPtr.Zero)
+            {
+                throw new InvalidOperationException($"ComponentLookUpPtr should never be Zero, but was for {this}");
+            }
+
+            var lookupPtr = Memory.Read<ComponentLookUpStruct>(entityDetails.ComponentLookUpPtr);
             if (lookupPtr.ComponentsNameAndIndex.Capacity > MaxComponentsInAnEntity)
             {
                 return false;
             }
-
-            var namesAndIndexes = Memory.ReadStdBucket<ComponentNameAndIndexStruct>(
-                lookupPtr.ComponentsNameAndIndex);
+            
+            var namesAndIndexes = Memory.ReadStdBucket<ComponentNameAndIndexStruct>(lookupPtr.ComponentsNameAndIndex);
             var entityComponent = Memory.ReadStdVector<IntPtr>(entityBase.ComponentListPtr);
             foreach (var nameAndIndex in namesAndIndexes)
             {
@@ -131,6 +136,8 @@ public class Entity : MemoryObjectBase
                     componentAddresses.TryAdd(name, entityComponent[nameAndIndex.Index]);
                 }
             }
+            
+            Log.Info($"Components:\n\t{componentAddresses.Select(x => new { Name = x.Key, Addr = x.Value.ToHexadecimal() }).DumpToTable()}");
         }
         else
         {

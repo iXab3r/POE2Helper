@@ -13,10 +13,13 @@ namespace CheatCartridge.GameHelper.RemoteObjects.States.InGameStateObjects;
 /// </summary>
 public class AreaInstance : MemoryObjectBase
 {
-    public AreaInstance(IMemory memory)
+    public IFluentLog Log { get; }
+
+    public AreaInstance(IMemory memory, IFluentLog log)
         : base(memory)
     {
-        Player = new Entity(memory);
+        Log = log;
+        Player = new Entity(memory, log);
     }
 
     public Entity Player { get; }
@@ -31,9 +34,14 @@ public class AreaInstance : MemoryObjectBase
         if (hasAddressChanged)
         {
             Cleanup(true);
+            Log.Info($"Area Instance Address changed to: {Address.ToHexadecimal()}");
         }
 
         var data = Memory.Read<AreaInstanceOffsets>(Address);
+        if (hasAddressChanged)
+        {
+            Log.Info($"Current area: {new { data.CurrentAreaLevel, data.CurrentAreaHash, data.EntitiesCount }}");
+        }
         var playerVector = Memory.ReadStdVector<IntPtr>(data.LocalPlayers);
         Player.Address = playerVector[0];
     }

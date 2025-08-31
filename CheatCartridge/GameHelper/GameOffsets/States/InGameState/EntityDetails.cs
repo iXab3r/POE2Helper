@@ -5,6 +5,13 @@ namespace CheatCartridge.GameHelper.GameOffsets.States.InGameState;
 [StructLayout(LayoutKind.Explicit, Pack = 1)]
 public struct EntityDetails
 {
+    /// <summary>
+    /// For Player something like L'Metadata/Characters/Dex/DexFourb'
+    /// </summary>
     [FieldOffset(0x08)] public StdWString name;
-    [FieldOffset(0x30)] public IntPtr ComponentLookUpPtr;
+    
+    /// <summary>
+    /// The very first 
+    /// </summary>
+    [FieldOffset(0x28)] public IntPtr ComponentLookUpPtr;
 }

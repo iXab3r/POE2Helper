@@ -1,4 +1,5 @@
 using CheatCartridge.GameHelper.Natives;
+using CheatCartridge.GameHelper.RemoteEnums;
 
 namespace CheatCartridge.GameHelper.GameOffsets;
 
@@ -9,6 +10,26 @@ public unsafe struct GameStateBuffer
 
     private fixed byte _data[TOTAL_STATES * 16];
 
+    public GameStateTypes GetStateType(IntPtr statePtr)
+    {
+        foreach (var (stateType, statePtr2) in Enumerate())
+        {
+            if (statePtr2.X == statePtr)
+            {
+                return stateType;
+            }
+        }
+        return GameStateTypes.AreaLoadingState;
+    }
+
+    public IEnumerable<(GameStateTypes StateType, StdTuple2D<IntPtr> StatePtr)> Enumerate()
+    {
+        for (var i = 0; i < TOTAL_STATES; i++)
+        {
+            yield return ((GameStateTypes) i, this[i]);
+        }
+    }
+        
     /// <summary>
     /// Accesses the elements of the buffer by index.
     /// </summary>
