@@ -18,5 +18,5 @@ public sealed record PoeHelperConfig
 
     public bool IsExpanded { get; set; } = true;
 
-    public Rectangle WindowBounds { get; set; } = new Rectangle(0, 0, 450, 280);
+    public Rectangle WindowBounds { get; set; } = new Rectangle(0, 0, 450, 310);
 }

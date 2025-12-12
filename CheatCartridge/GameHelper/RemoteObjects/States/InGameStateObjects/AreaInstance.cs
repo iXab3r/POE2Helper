@@ -37,13 +37,32 @@ public class AreaInstance : MemoryObjectBase
             Log.Info($"Area Instance Address changed to: {Address.ToHexadecimal()}");
         }
 
-        var data = Memory.Read<AreaInstanceOffsets>(Address);
-        if (hasAddressChanged)
+        AreaInstanceOffsets data;
+        try
         {
-            Log.Info($"Current area: {new { data.CurrentAreaLevel, data.CurrentAreaHash, data.EntitiesCount }}");
+            data = Memory.Read<AreaInstanceOffsets>(Address);
+            if (hasAddressChanged)
+            {
+                Log.Info($"Current area: {new {data.CurrentAreaLevel, data.CurrentAreaHash, data.EntitiesCount}}");
+            }
         }
-        var playerVector = Memory.ReadStdVector<IntPtr>(data.LocalPlayers);
-        Player.Address = playerVector[0];
+        catch (Exception e)
+        {
+            Log.Error($"Failed to read area instance offsets @ {Address.ToHexadecimal()}");
+            throw;
+        }
+
+        try
+        {
+            var playerVector = Memory.ReadStdVector<IntPtr>(data.LocalPlayers);
+            Player.Address = playerVector[0];
+        }
+        catch (Exception e)
+        {
+            Log.Error($"Failed to read local players array @ {new { First = data.LocalPlayers.First.ToHexadecimal(), Last = data.LocalPlayers.Last.ToHexadecimal(), End = data.LocalPlayers.End.ToHexadecimal() }}");
+            throw;
+        }
+       
     }
 
     private void Cleanup(bool isAreaChange)
