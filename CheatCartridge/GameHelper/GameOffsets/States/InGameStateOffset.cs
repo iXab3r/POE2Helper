@@ -3,7 +3,10 @@ namespace CheatCartridge.GameHelper.GameOffsets.States;
 [StructLayout(LayoutKind.Explicit, Pack = 1)]
 public struct InGameStateOffset
 {
-    [FieldOffset(0x46C)] public int ZoneSwitchCounter;
+    /// <summary>
+    /// 0x46C => 0x56C (+100)
+    /// </summary>
+    [FieldOffset(0x56C)] public int ZoneSwitchCounter;
     
     /// <summary>
     /// Right after this ptr there is some "ticking" number (not increasing, just oscillating 5000-15000)
@@ -12,8 +15,9 @@ public struct InGameStateOffset
     
     /// <summary>
     /// Increasing number, probably count of ms elapsed since computer/client started
+    /// 0x328 => 0x400 (+D8)
     /// </summary>
-    [FieldOffset(0x328)] public IntPtr MsElapsed;
+    [FieldOffset(0x400)] public IntPtr MsElapsed;
     
     /// <summary>
     /// Contains ptr to Unicode string containing login server host.

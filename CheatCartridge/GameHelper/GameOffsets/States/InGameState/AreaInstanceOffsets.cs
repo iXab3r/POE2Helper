@@ -12,27 +12,27 @@ public struct AreaInstanceOffsets
     
     /// <summary>
     /// == Monster Level, Clearfell = 2
-    /// 0xB4 -> 0xBC (+8) -> 0xC4 (+8)
+    /// 0xB4 -> 0xBC (+8) -> 0xC4 (+8) 
     /// </summary>
     [FieldOffset(0x0C4)] public byte CurrentAreaLevel;
     
     /// <summary>
     /// Usually has quite high entrhtropy, e.g. 1494246552
-    /// 0xF4 -> 0xFC (+8) -> 0x104 (+8)
+    /// 0xF4 -> 0xFC (+8) -> 0x104 (+8) => 0x11C (+0x18)
     /// </summary>
-    [FieldOffset(0x104)] public uint CurrentAreaHash;
+    [FieldOffset(0x11C)] public uint CurrentAreaHash;
     
     /// <summary>
     /// Before this ptr there are 28 zeroes
     /// 0xA00 -> 0xA08 (+8) -> 0xA10 (+8)
     /// </summary>
-    [FieldOffset(0xA10)] public StdVector LocalPlayers;
+    [FieldOffset(0x588)] public StdVector LocalPlayers;
     
     /// <summary>
     /// Some oscillating value, 0.07 - 0.30, ping?
-    /// 0xAB8 -> 0xAC0 (+8)
+    /// 0xAB8 -> 0xAC0 (+8) -> 0x638 (-0x488)
     /// </summary>
-    [FieldOffset(0xAC0)] public float UnknownNumber1;
+    [FieldOffset(0x638)] public float UnknownNumber1;
     
     /// <summary>
     /// Pointer to some vtable
@@ -42,7 +42,7 @@ public struct AreaInstanceOffsets
     
     /// <summary>
     /// In Clearfell at tp ~30-50
-    /// 0xB58 -> 0xB60 (+8) -> 0xB68 (+8)
+    /// 0xB58 -> 0xB60 (+8) -> 0xB68 (+8) -> 0x6C8 (-0x4A0)
     /// </summary>
-    [FieldOffset(0xB68)] public uint EntitiesCount;
+    [FieldOffset(0x6C8)] public uint EntitiesCount;
 }

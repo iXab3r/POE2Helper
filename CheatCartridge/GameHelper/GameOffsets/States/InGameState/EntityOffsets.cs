@@ -8,10 +8,10 @@ public struct EntityOffsets
     /// <summary>
     /// For player - quite small value, something around 200-1000
     /// </summary>
-    [FieldOffset(0x80)] public uint Id;
+    [FieldOffset(0x88)] public uint Id;
     
     /// <summary>
     /// Still works for 0.3
     /// </summary>
-    [FieldOffset(0x84)] public byte IsValid; // 0x0C = Valid, 0x03 = Invalid
+    [FieldOffset(0x8C)] public byte IsValid; // 0x0C = Valid, 0x03 = Invalid
 }
