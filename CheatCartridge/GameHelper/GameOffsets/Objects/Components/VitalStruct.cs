@@ -9,22 +9,22 @@ public struct VitalStruct
     /// <summary>
     ///     e.g. Clarity reserve flat Vital
     /// </summary>
-    [FieldOffset(0x10)] public int ReservedFlat;
+    [FieldOffset(0x18)] public int ReservedFlat;
 
     /// <summary>
     ///     e.g. Heralds reserve % Vital.
     ///     ReservedFlat does not change this value.
     ///     Note that it's an integer, this is due to 20.23% is stored as 2023
     /// </summary>
-    [FieldOffset(0x14)] public int ReservedPercent;
+    [FieldOffset(0x1C)] public int ReservedPercent;
 
     /// <summary>
     ///     This is greater than zero if Vital is regenerating
     ///     For value = 0 or less than 0, Vital isn't regenerating
     /// </summary>
     [FieldOffset(0x28)] public float Regeneration;
-    [FieldOffset(0x2C)] public int Total;
-    [FieldOffset(0x30)] public int Current;
+    [FieldOffset(0x34)] public int Total;
+    [FieldOffset(0x38)] public int Current;
 
     /// <summary>
     ///     Final Reserved amount of Vital after all the calculations.

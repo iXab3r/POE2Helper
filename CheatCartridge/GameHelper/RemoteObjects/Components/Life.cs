@@ -13,7 +13,9 @@ namespace CheatCartridge.GameHelper.RemoteObjects.Components;
 public sealed class Life : ComponentBase
 {
     public Life(IMemory memory, IntPtr address)
-        : base(memory, address) { }
+        : base(memory, address)
+    {
+    }
 
     /// <summary>
     ///     Gets the health related information of the entity.
@@ -33,13 +35,18 @@ public sealed class Life : ComponentBase
     /// <inheritdoc />
     protected override void UpdateData(bool hasAddressChanged)
     {
+        if (hasAddressChanged)
+        {
+            Memory.Log.Info($"Vitals: {Address.ToHexadecimal()}");
+        }
+
         var data = Memory.Read<LifeOffset>(Address);
         OwnerEntityAddress = data.Header.EntityPtr;
         Health = data.Health;
         EnergyShield = data.EnergyShield;
         Mana = data.Mana;
     }
-    
+
     public override string ToString()
     {
         var builder = new ToStringBuilder(this);
