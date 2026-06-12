@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0-windows7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <IsPackable>false</IsPackable>
+        <WarningsAsErrors>false</WarningsAsErrors>
+        <UseWPF>true</UseWPF>
+        <UseWindowsForms>true</UseWindowsForms>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <EyeAurasRuntimeAssembliesDir Condition="'$(EyeAurasRuntimeAssembliesDir)' == '' And Exists('$(MSBuildThisFileDirectory)..\..\EyeAuras\Sources\EyeAuras.SDK\bin\EyeAuras.Memory.dll')">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\EyeAuras\Sources\EyeAuras.SDK\bin'))</EyeAurasRuntimeAssembliesDir>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />
+        <PackageReference Include="NUnit" Version="3.13.3" />
+        <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
+        <PackageReference Include="NUnit.Analyzers" Version="3.3.0" />
+        <PackageReference Include="coverlet.collector" Version="3.1.2" />
+        <PackageReference Include="Shouldly" Version="4.2.1" />
+        <PackageReference Include="Moq" Version="4.15.2" />
+        <PackageReference Include="EyeAuras.SDK" Version="1.9.9801" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.19" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\CheatCartridge\CheatCartridge.csproj" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(EyeAurasRuntimeAssembliesDir)' != ''">
+        <EyeAurasRuntimeAssembly Include="$(EyeAurasRuntimeAssembliesDir)\EyeAuras*.dll" />
+        <EyeAurasRuntimeAssembly Include="$(EyeAurasRuntimeAssembliesDir)\PoeShared*.dll" />
+        <EyeAurasRuntimeAssembly Include="$(EyeAurasRuntimeAssembliesDir)\PropertyBinder*.dll" />
+    </ItemGroup>
+
+    <Target Name="CopyEyeAurasRuntimeAssembliesForCheatCartridgeIntegrationTests" AfterTargets="Build" Condition="'@(EyeAurasRuntimeAssembly)' != ''">
+        <Message Importance="high" Text="Copying EyeAuras runtime assemblies for CheatCartridge LocalProcess integration tests from $(EyeAurasRuntimeAssembliesDir)" />
+        <Copy SourceFiles="@(EyeAurasRuntimeAssembly)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+    </Target>
+
+</Project>

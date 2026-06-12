@@ -9,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Additional", "Additional", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheatCartridge", "CheatCartridge\CheatCartridge.csproj", "{AD15B0B5-5D1E-473F-A063-1BEEFCE509CD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheatCartridge.Tests", "CheatCartridge.Tests\CheatCartridge.Tests.csproj", "{4015DF73-C926-429C-A48E-EA05EDB6EB08}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,5 +21,9 @@ Global
 		{AD15B0B5-5D1E-473F-A063-1BEEFCE509CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD15B0B5-5D1E-473F-A063-1BEEFCE509CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD15B0B5-5D1E-473F-A063-1BEEFCE509CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4015DF73-C926-429C-A48E-EA05EDB6EB08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4015DF73-C926-429C-A48E-EA05EDB6EB08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4015DF73-C926-429C-A48E-EA05EDB6EB08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4015DF73-C926-429C-A48E-EA05EDB6EB08}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

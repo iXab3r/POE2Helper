@@ -15,6 +15,7 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="EyeAuras.SDK" Version="1.8.8637.0" />
+    <PackageReference Include="EyeAuras.SDK" Version="1.9.9801" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.19" />
   </ItemGroup>
 </Project>

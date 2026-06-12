@@ -24,6 +24,12 @@ public class AreaInstance : MemoryObjectBase
 
     public Entity Player { get; }
 
+    public byte CurrentAreaLevel { get; private set; }
+
+    public uint CurrentAreaHash { get; private set; }
+
+    public uint EntitiesCount { get; private set; }
+
     protected override void CleanUpData()
     {
         Cleanup(false);
@@ -41,9 +47,12 @@ public class AreaInstance : MemoryObjectBase
         try
         {
             data = Memory.Read<AreaInstanceOffsets>(Address);
+            CurrentAreaLevel = data.CurrentAreaLevel;
+            CurrentAreaHash = data.CurrentAreaHash;
+            EntitiesCount = data.EntitiesCount;
             if (hasAddressChanged)
             {
-                Log.Info($"Current area: {new {data.CurrentAreaLevel, data.CurrentAreaHash, data.EntitiesCount}}");
+                Log.Info($"Current area: {new { CurrentAreaLevel, CurrentAreaHash, EntitiesCount }}");
             }
         }
         catch (Exception e)
