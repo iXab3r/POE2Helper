@@ -15,7 +15,6 @@ namespace CheatCartridge.GameHelper.RemoteObjects.States.InGameStateObjects;
 /// </summary>
 public class Entity : MemoryObjectBase
 {
-    public IFluentLog Log { get; }
     private static readonly int MaxComponentsInAnEntity = 50;
 
     private readonly ConcurrentDictionary<string, IntPtr> componentAddresses = new();
@@ -29,6 +28,8 @@ public class Entity : MemoryObjectBase
         Id = 0;
         IsValid = false;
     }
+
+    public IFluentLog Log { get; }
 
     /// <summary>
     ///     Gets the Path (e.g. Metadata/Character/int/int) assocaited to the entity.

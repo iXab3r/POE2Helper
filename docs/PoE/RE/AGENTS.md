@@ -36,16 +36,6 @@ When documenting runtime observations, record:
 - whether the process was read through `LocalProcess`
 - any permissions, elevation, or runtime-assembly issue that affected the run
 
-## Frida Script Rules
-
-Frida scripts are optional RE tools for bounded runtime probes. Their runtime files live under `docs/PoE/RE/frida/scripts`.
-
-- Catalog reusable investigation scripts under `docs/PoE/RE/frida/`.
-- Keep registered script files under `docs/PoE/RE/frida/scripts`.
-- Promote scratch scripts only when they are reusable, bounded, and have cleanup/disarm behavior.
-- Link script-backed observations from evidence notes or investigation work items.
-- Treat Frida output as runtime evidence, not proof by itself.
-
 ## Reconstruction Rules
 
 - `.re.cpp` and `.re.hpp` files are pseudo-C++ mirrors for navigation. They are not build inputs and must not be added to product projects.
@@ -61,7 +51,7 @@ A durable finding needs at least one concrete source:
 
 - IDA observation: name, comment, xref, RVA/VA, decompiler shape, or callsite.
 - String/xref/static binary observation.
-- Frida trace or runtime probe result.
+- LocalProcess or bounded runtime probe result.
 - Memory state or data-flow observation from a local investigation.
 - Existing CheatCartridge product code that already relies on the finding.
 - Supplemental third-party reference only when backed by one of the primary sources above.
@@ -72,5 +62,5 @@ Each evidence note must include a `How To Recheck` section with exact local step
 
 - Do not document anti-cheat bypass, stealth, auth/payment/security circumvention, exploit paths, or unauthorized network behavior.
 - Frame prompts and notes as evidence-driven local analysis, compatibility, debugging, and architecture understanding.
-- Keep private offsets, addresses, dump paths, and IDA/Frida findings out of public-facing docs.
+- Keep private offsets, addresses, dump paths, and RE findings out of public-facing docs.
 - Use environment variables such as `$env:REPO_ROOT`, `$env:IDA_INSTALL_DIR`, `$env:APPDATA`, and `$env:USERPROFILE` instead of hard-coding one user machine path.

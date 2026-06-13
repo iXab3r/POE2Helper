@@ -9,7 +9,7 @@ IDA is the authoritative working notebook. This folder mirrors stable findings i
 - [Workspace rules](AGENTS.md)
 - [Reusable RE approach](RE-APPROACH.md)
 - [Runtime field investigation guide](RUNTIME-FIELD-INVESTIGATION-GUIDE.md)
-- [Frida investigation framework](frida/)
+- [Offset gap ledger](poe-gaps.md)
 - [Templates](templates/)
 - [Build workspaces](builds/)
 
@@ -17,6 +17,6 @@ Stable reconstructed knowledge lives under `builds/<build>/<binary>/<intent>/`. 
 
 ## Current Status
 
-This workspace is a scaffold. Add the first build folder only after recording the concrete Path Of Exile client build, target binary, and evidence source.
+This workspace has an active `sha256-c5da3833` PathOfExileSteam build slice. Treat build-specific conclusions as scoped to that binary until another client build confirms the same shape or an equivalent keypoint.
 
 CheatCartridge uses `LocalProcess` for live-client memory reads. Treat that as the default process access path in PoE integration tests and runtime investigations unless a note explicitly states otherwise.

@@ -39,6 +39,7 @@ public class GameStates : MemoryObjectBase
             {
                 allStates[data.States[i].X] = (GameStateTypes)i;
             }
+
             Log.Info($"Loaded game states");
             RefreshCurrentState(data);
             Log.Info($"CurrentState @ {currentStateAddress.ToHexadecimal()}: {data.States.GetStateType(currentStateAddress)}");
@@ -56,7 +57,7 @@ public class GameStates : MemoryObjectBase
 
         void RefreshCurrentState(GameStateOffset data)
         {
-            var cStateAddr = Memory.Read<IntPtr>(data.CurrentStatePtr.Last - 0x10); // Get 2nd-last ptr.
+            var cStateAddr = Memory.Read<IntPtr>(data.CurrentStatePtr.Last - 0x10);
             if (cStateAddr != IntPtr.Zero && cStateAddr != currentStateAddress)
             {
                 currentStateAddress = cStateAddr;

@@ -55,7 +55,7 @@ public class AreaInstance : MemoryObjectBase
                 Log.Info($"Current area: {new { CurrentAreaLevel, CurrentAreaHash, EntitiesCount }}");
             }
         }
-        catch (Exception e)
+        catch
         {
             Log.Error($"Failed to read area instance offsets @ {Address.ToHexadecimal()}");
             throw;
@@ -66,12 +66,11 @@ public class AreaInstance : MemoryObjectBase
             var playerVector = Memory.ReadStdVector<IntPtr>(data.LocalPlayers);
             Player.Address = playerVector[0];
         }
-        catch (Exception e)
+        catch
         {
             Log.Error($"Failed to read local players array @ {new { First = data.LocalPlayers.First.ToHexadecimal(), Last = data.LocalPlayers.Last.ToHexadecimal(), End = data.LocalPlayers.End.ToHexadecimal() }}");
             throw;
         }
-       
     }
 
     private void Cleanup(bool isAreaChange)

@@ -15,19 +15,24 @@ internal static class MemoryExtensions
     public static TValue[] ReadStdBucket<TValue>(this IMemory memory, StdBucket nativeContainer)
         where TValue : unmanaged
     {
-        if (nativeContainer.Data.First == IntPtr.Zero ||
-            nativeContainer.Capacity <= 0x00)
+        if (nativeContainer.Data.First == IntPtr.Zero)
         {
             return Array.Empty<TValue>();
         }
 
-        return memory.ReadStdVector<TValue>(nativeContainer.Data);
+        return ReadStdVectorCore<TValue>(memory, nativeContainer.Data);
     }
     
     /// <summary>
     ///     Reads the std::vector into an array.
     /// </summary>
     public static T[] ReadStdVector<T>(this IMemory memory, StdVector nativeContainer)
+        where T : unmanaged
+    {
+        return ReadStdVectorCore<T>(memory, nativeContainer);
+    }
+
+    private static T[] ReadStdVectorCore<T>(IMemory memory, StdVector nativeContainer)
         where T : unmanaged
     {
         var typeSize = Marshal.SizeOf<T>();
@@ -56,7 +61,7 @@ internal static class MemoryExtensions
             return string.Empty;
         }
 
-        if (nativeContainer.Capacity <= 8)
+        if (nativeContainer.Capacity <= 7)
         {
             var buffer = BitConverter.GetBytes(nativeContainer.Buffer.ToInt64());
             var ret = Encoding.Unicode.GetString(buffer);

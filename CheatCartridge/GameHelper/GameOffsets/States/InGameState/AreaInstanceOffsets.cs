@@ -1,48 +1,48 @@
 using CheatCartridge.GameHelper.Natives;
+using CheatCartridge.GameHelper.GameOffsets;
 
 namespace CheatCartridge.GameHelper.GameOffsets.States.InGameState;
 
+[FrameFormatType("AreaInstance")]
 [StructLayout(LayoutKind.Explicit, Pack = 1)]
 public struct AreaInstanceOffsets
 {
     /// <summary>
-    /// Right after VTable there are also 3 another pointers  
-    /// </summary>
-    [FieldOffset(0x000)] public IntPtr Vtable;
-    
-    /// <summary>
     /// == Monster Level, Clearfell = 2
-    /// 0xB4 -> 0xBC (+8) -> 0xC4 (+8) 
+    /// 0xB4 -> 0xBC (+8) -> 0xC4 (+8)
     /// </summary>
+    [FrameFormatField("current_area_level")]
+    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "AreaInstance.current_area_level; Monster/area level.")]
     [FieldOffset(0x0C4)] public byte CurrentAreaLevel;
-    
+
     /// <summary>
     /// Usually has quite high entrhtropy, e.g. 1494246552
     /// 0xF4 -> 0xFC (+8) -> 0x104 (+8) => 0x11C (+0x18)
     /// </summary>
+    [FrameFormatField("current_area_hash")]
+    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "AreaInstance.current_area_hash; Hash of the currently loaded area instance.")]
     [FieldOffset(0x11C)] public uint CurrentAreaHash;
-    
+
     /// <summary>
     /// Before this ptr there are 28 zeroes
     /// 0xA00 -> 0xA08 (+8) -> 0xA10 (+8)
     /// </summary>
+    [FrameFormatField("local_players")]
+    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "AreaInstance.local_players; Vector of local player entity pointers.")]
     [FieldOffset(0x588)] public StdVector LocalPlayers;
-    
+
     /// <summary>
-    /// Some oscillating value, 0.07 - 0.30, ping?
-    /// 0xAB8 -> 0xAC0 (+8) -> 0x638 (-0x488)
+    /// Count for the AreaInstance-owned entity tree.
+    ///
+    /// RE evidence for build sha256-c5da3833:
+    /// FUN_14206E780 initializes the first entity tree container at +0x6B0.
+    /// The constructor sets the tree root/sentinel pointer at +0x6C0 and clears
+    /// the adjacent qword count at +0x6C8. Offsets.KeypointNames.AreaInstanceEntityTreeRoot
+    /// recovers +0x6C0 from code, then tests derive this field as +0x6C0 + 8.
+    ///
+    /// See docs/PoE/RE/builds/sha256-c5da3833/PathOfExileSteam/game-states/AreaInstanceScalars.evidence.md.
     /// </summary>
-    [FieldOffset(0x638)] public float UnknownNumber1;
-    
-    /// <summary>
-    /// Pointer to some vtable
-    /// 0xB38 -> 0xB40 (+8)
-    /// </summary>
-    [FieldOffset(0xB38)] public IntPtr UnknownVtablePtr; 
-    
-    /// <summary>
-    /// In Clearfell at tp ~30-50
-    /// 0xB58 -> 0xB60 (+8) -> 0xB68 (+8) -> 0x6C8 (-0x4A0)
-    /// </summary>
+    [FrameFormatField("entities_count")]
+    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "AreaInstance.entities_count; Entity-tree count stored after the root pointer.")]
     [FieldOffset(0x6C8)] public uint EntitiesCount;
 }

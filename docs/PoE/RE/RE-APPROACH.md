@@ -34,11 +34,11 @@ When analysis jumps from anchor `X` to another substantial anchor `Y`, create or
 
 ## Runtime Probes
 
-Treat reusable Frida scripts and other runtime probes as framework artifacts, not disposable chat leftovers.
+Treat reusable runtime probes as framework artifacts, not disposable chat leftovers.
 
-- Keep a catalog that explains each promoted script's purpose, inputs, outputs, risks, and related slice.
-- Prefer scratch scripts for one-off experiments; promote only reusable diagnostics.
-- Keep probes bounded and gated: explicit duration, max event counts, filters, and cleanup/disarm behavior.
+- Keep a catalog when a probe becomes reusable enough to promote.
+- Prefer scratch experiments until a diagnostic has proven repeat value.
+- Keep probes bounded and gated: explicit duration, max event counts, filters, and cleanup behavior.
 - Record what observation would confirm or reject the hypothesis before treating a live run as evidence.
 - Do not promote a runtime observation into a stable reconstruction until it is tied back to IDA/disassembly, memory state, or another concrete source where needed.
 

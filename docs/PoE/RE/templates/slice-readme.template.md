@@ -13,7 +13,7 @@ State the smallest useful conclusion this slice supports.
 ## Anchors
 
 - IDA: `<function name or sub_RVA>`, `<RVA/VA>`, `<comment/xref summary>`
-- Runtime: `<LocalProcess sample/Frida script/log/probe>`
+- Runtime: `<LocalProcess sample/log/probe>`
 - Product: `<repo path/symbol>`
 - Supplemental refs: `<third-party offset/string/product note, if any>`
 

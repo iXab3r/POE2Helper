@@ -28,6 +28,7 @@ public class InGameState : MemoryObjectBase
         {
             Log.Info($"InGameState Address changed to: {Address.ToHexadecimal()}");
         }
+
         var data = Memory.Read<InGameStateOffset>(Address);
         CurrentAreaInstance.Address = data.AreaInstanceData;
     }

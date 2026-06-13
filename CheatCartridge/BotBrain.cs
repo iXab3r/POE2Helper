@@ -1,6 +1,5 @@
 using System.Windows;
 using CheatCartridge.GameHelper;
-using CheatCartridge.GameHelper.RemoteObjects.Components;
 using Point = System.Drawing.Point;
 using Size = System.Drawing.Size;
 
@@ -38,7 +37,7 @@ public sealed class BotBrain : DisposableReactiveObject
     }
 
     private readonly IConfigSerializer configSerializer;
-    private readonly IFactory<TheGame, IMemory> gameFactory;
+    private readonly ClassicBotMode classicMode;
     private readonly IHotkeyConverter hotkeyConverter;
 
     public BotBrain(
@@ -58,8 +57,8 @@ public sealed class BotBrain : DisposableReactiveObject
         IsEnabledAura = auraTree.GetAuraByPath("./IsEnabled");
         IsEnabledHotkeyTrigger = auraTree.GetTriggerByPath<IHotkeyIsActiveTrigger>("./IsEnabled");
         this.configSerializer = configSerializer;
-        this.gameFactory = gameFactory;
         this.hotkeyConverter = hotkeyConverter;
+        classicMode = new ClassicBotMode(this, gameFactory);
 
         Window = dialogApi
             .CreateWindow<PoeEyeComponent>()
@@ -225,91 +224,33 @@ public sealed class BotBrain : DisposableReactiveObject
 
     public bool IsEnabled { get; [UsedImplicitly] private set; } = true;
 
-    public double HealthPercentage { get; private set; }
+    public double HealthPercentage { get; internal set; }
 
-    public double HealthCurrent { get; private set; }
+    public double HealthCurrent { get; internal set; }
 
-    public double HealthMax { get; private set; }
+    public double HealthMax { get; internal set; }
 
-    public double ManaPercentage { get; private set; }
+    public double ManaPercentage { get; internal set; }
 
-    public double ManaCurrent { get; private set; }
+    public double ManaCurrent { get; internal set; }
 
-    public double ManaMax { get; private set; }
+    public double ManaMax { get; internal set; }
     
-    public double EnergyShieldPercentage { get; private set; }
+    public double EnergyShieldPercentage { get; internal set; }
 
-    public double EnergyShieldCurrent { get; private set; }
+    public double EnergyShieldCurrent { get; internal set; }
 
-    public double EnergyShieldMax { get; private set; }
+    public double EnergyShieldMax { get; internal set; }
 
-    public MovingStatisticsValue<double> FrameTime { get; private set; }
+    public MovingStatisticsValue<double> FrameTime { get; internal set; }
 
-    public int? TargetProcessId { get; private set; }
+    public int? TargetProcessId { get; internal set; }
 
     public Size ExpandedWindowSize { get; [UsedImplicitly] private set; }
 
-    public async Task Run(CancellationToken cancellationToken)
+    public Task Run(CancellationToken cancellationToken)
     {
-        //this flag shows that the bot has been started manually
-        var disabledRightFromTheStart = IsEnabledAura.IsActive != true;
-        Window.Show();
-
-        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        using var whenClosedCancel = Window.WhenClosed.Subscribe(x => linkedCts.Cancel());
-
-        using var closeIfDisabled = IsEnabledAura.IsActive == true
-            ? IsEnabledAura.WhenAnyValue(x => x.IsActive).Where(x => x != true).Subscribe(() => linkedCts.Cancel())
-            : Disposable.Empty;
-
-        Log.Info("Starting bot loop");
-        while (!linkedCts.IsCancellationRequested)
-        {
-            try
-            {
-                if (!disabledRightFromTheStart && IsEnabledAura.IsActive != true)
-                {
-                    Log.Info("Bot is no longer enabled - breaking bot loop");
-                    break;
-                }
-
-                if (!IsEnabled)
-                {
-                    linkedCts.Token.Sleep(5000);
-                    continue;
-                }
-
-                var targetProcessId = WinActiveTrigger.ActiveWindow?.ProcessId;
-                if (targetProcessId == null)
-                {
-                    Log.Warn("Path Of Exile 2 client not found");
-                    linkedCts.Token.Sleep(5000);
-                    continue;
-                }
-
-                Log.Info($"Binding to process with Id {targetProcessId}");
-                TargetProcessId = targetProcessId;
-                
-                using var process = 
-                    EyeAuras.Memory.LocalProcess.ByProcessId(targetProcessId.Value); //uses naive RPM under the hood
-                Log.Info($"Found Path Of Exile Process: {process}");
-                
-                var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
-                Log.Info($"Process: {process}, process name: {moduleName}, module name: {moduleName}");
-
-                using var memory = process.MemoryOfModule(moduleName); //get specific module by name
-                await BindToProcess(memory, linkedCts.Token);
-            }
-            catch (Exception ex)
-            {
-                Log.Error("Exception occurred", ex);
-                linkedCts.Token.Sleep(5000);
-            }
-        }
-
-        // reset hotkey state
-        IsEnabledHotkeyTrigger.TriggerValue = false;
-        Log.Info("Bot is no longer running");
+        return classicMode.Run(cancellationToken);
     }
 
     private void EnsureWindowIsInsideScreenBounds()
@@ -416,50 +357,4 @@ public sealed class BotBrain : DisposableReactiveObject
         LoadConfig(config);
     }
 
-    private async Task BindToProcess(IMemory memory, CancellationToken cancellationToken)
-    {
-        var game = gameFactory.Create(memory);
-        var fpsStats = new ConcurrentMovingStatistics(100);
-
-        var sw = Stopwatch.StartNew();
-        while (!cancellationToken.IsCancellationRequested && IsEnabled)
-        {
-            sw.Restart();
-            var targetFrameDelay = 1000 / Math.Max(TargetFps, 1);
-            await using (new ForcedDelayBlock(targetFrameDelay))
-            {
-                game.UpdateData();
-
-                if (game.Player.TryGetComponent<Life>(out var playerLife))
-                {
-                    HealthCurrent = playerLife.Health.Current;
-                    HealthMax = playerLife.Health.Total;
-                    HealthPercentage = playerLife.Health.CurrentInPercent();
-
-                    ManaCurrent = playerLife.Mana.Current;
-                    ManaMax = playerLife.Mana.Total;
-                    ManaPercentage = playerLife.Mana.CurrentInPercent();
-                    
-                    EnergyShieldCurrent = playerLife.EnergyShield.Current;
-                    EnergyShieldMax = playerLife.EnergyShield.Total;
-                    EnergyShieldPercentage = playerLife.EnergyShield.CurrentInPercent();
-                }
-
-                BehaviorTree.Variables.Edit(cache =>
-                {
-                    cache.AddOrUpdate(new AuraVariable(nameof(HealthPercentage), HealthPercentage));
-                    cache.AddOrUpdate(new AuraVariable(nameof(ManaPercentage), ManaPercentage));
-                    cache.AddOrUpdate(new AuraVariable(nameof(EnergyShieldPercentage), EnergyShieldPercentage));
-                });
-
-                await BehaviorTree.TickAsync(cancellationToken);
-            }
-
-            sw.Stop();
-
-            var frameTime = sw.ElapsedMilliseconds < 0 ? 0 : sw.ElapsedMilliseconds;
-            fpsStats.Push(frameTime);
-            FrameTime = fpsStats.GetValue();
-        }
-    }
 }

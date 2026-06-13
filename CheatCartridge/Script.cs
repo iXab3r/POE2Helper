@@ -1,6 +1,21 @@
-Log.Info("Hello, world! I will be reading Current/Max HP values and using HP/Mana potions");
-var botBrain = GetService<BotBrain, IFluentLog>(Log) //create bot
-    .AddTo(ExecutionAnchors); //dispose once script is completed
+Log.Info("Starting CheatCartridge");
 cancellationToken.Register(() => Log.Warn("Run has been cancelled"));
-await botBrain.Run(cancellationToken); //cancellationToken allows EA to stop the script
-Log.Info("Bot has completed its run"); 
+
+var useHeadlessMode = true;
+
+if (useHeadlessMode)
+{
+    Log.Info("CheatCartridge selected headless debug mode");
+    var headlessBot = GetService<HeadlessBotMode, IFluentLog>(Log)
+        .AddTo(ExecutionAnchors);
+    await headlessBot.Run(cancellationToken);
+}
+else
+{
+    Log.Info("CheatCartridge selected classic EyeAuras mode");
+    var classicBot = GetService<BotBrain, IFluentLog>(Log)
+        .AddTo(ExecutionAnchors);
+    await classicBot.Run(cancellationToken);
+}
+
+Log.Info("CheatCartridge has completed its run");

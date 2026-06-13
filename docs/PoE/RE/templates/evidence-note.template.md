@@ -22,7 +22,7 @@ Confidence: `<confirmed | probable | hypothesis | rejected>`
 ## How To Recheck
 
 - IDA: `<function/comment/xref/RVA>`
-- Runtime: `<LocalProcess sample/Frida script/tool/log>`
+- Runtime: `<LocalProcess sample/tool/log>`
 - Product: `<repo path/symbol>`
 - Supplemental refs: `<third-party offset/string/product note, if any>`
 

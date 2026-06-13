@@ -1,0 +1,311 @@
+syntax = "proto3";
+
+package poe.memory;
+
+import "google/protobuf/descriptor.proto";
+
+// Resolved Path Of Exile runtime memory layout.
+// @ffmeta layout=poe-game-model
+// @ffmeta source_name=PathOfExileSteam.exe
+// @ffmeta build_id=sha256-c5da3833
+// @ffmeta source_sha256=c5da38334762a28ceb77a65e16e741a7fddb19ca38c4f414566e1024d4e4637d
+// @ffmeta captured_at=2026-06-13T12:25:29.4645730+00:00
+
+message FFFileOptions {
+  int32 layout_pointer_size = 1;
+}
+
+message FFPacketOptions {
+}
+
+extend google.protobuf.FileOptions {
+  FFFileOptions ff_file = 51000;
+}
+
+extend google.protobuf.MessageOptions {
+  FFPacketOptions ff_packet = 51001;
+}
+
+option (ff_file) = {
+  layout_pointer_size: 8
+};
+
+// MSVC std::vector header. Element semantics are supplied by the owning field.
+message StdVector {
+  // @reclass offset=0x0 length=0x8
+  // @fflayout shape=primitive(Hex64)
+  uint64 first = 1; // First element pointer.
+
+  // @reclass offset=0x8 length=0x8
+  // @fflayout shape=primitive(Hex64)
+  uint64 last = 2; // One-past-last element pointer.
+
+  // @reclass offset=0x10 length=0x8
+  // @fflayout shape=primitive(Hex64)
+  uint64 end = 3; // One-past-capacity pointer.
+
+}
+
+// Hash/bucket-like wrapper whose first field is the vector used by component lookup.
+message StdBucket {
+  // @reclass offset=0x0 length=0x18
+  // @fflayout shape=class(StdVector)
+  StdVector data = 1; // Vector backing the bucket payload.
+
+  // @reclass offset=0x18 length=0x8
+  // @fflayout shape=primitive(Hex64)
+  uint64 unknown_ptr = 2; // Unclassified bucket pointer.
+
+  // @reclass offset=0x20 length=0x4
+  // @fflayout shape=primitive(int32)
+  int32 capacity_minus_one = 3; // Bucket capacity mask/capacity-minus-one value.
+
+  // @reclass offset=0x28 length=0x4
+  // @fflayout shape=primitive(uint32)
+  uint32 unknown1 = 4; // Unclassified bucket scalar.
+
+  // @reclass offset=0x30 length=0x4
+  // @fflayout shape=primitive(uint32)
+  uint32 unknown2 = 5; // Unclassified bucket scalar.
+
+  // @reclass offset=0x34 length=0x4
+  // @fflayout shape=primitive(uint32)
+  uint32 unknown3 = 6; // Unclassified bucket scalar.
+
+}
+
+// MSVC UTF-16 string. capacity <= 7 means bytes are inline at +0x00; otherwise +0x00 is an external buffer pointer.
+message StdWString {
+  // @reclass offset=0x0 length=0x8
+  // @fflayout shape=primitive(Hex64)
+  uint64 buffer_or_inline0 = 1; // External buffer pointer or first inline UTF-16 characters; inline capacity limit is 7.
+
+  // @reclass offset=0x8 length=0x8
+  // @fflayout shape=primitive(Hex64)
+  uint64 inline1 = 2; // Tail of inline UTF-16 storage.
+
+  // @reclass offset=0x10 length=0x4
+  // @fflayout shape=primitive(int32)
+  int32 length = 3; // UTF-16 character length.
+
+  // @reclass offset=0x18 length=0x4
+  // @fflayout shape=primitive(int32)
+  int32 capacity = 4; // UTF-16 character capacity.
+
+}
+
+// Global singleton wrapper returned by the GameStates getter.
+message GameStateStaticWrapper {
+  // @reclass offset=0x0 length=0x8
+  // @fflayout shape=ptr(pointer=8,target=class(GameStates))
+  GameStates owner = 1; // Pointer to the GameStates owner object.
+
+  // @reclass offset=0x8 length=0x8
+  // @fflayout shape=primitive(Hex64)
+  uint64 sidecar = 2; // Companion pointer stored beside the GameStates owner.
+
+}
+
+// Pair stored in the state table and current/dispatch vectors.
+message GameStateEntry {
+  // @reclass offset=0x0 length=0x8
+  // @fflayout shape=primitive(Hex64)
+  uint64 state = 1; // Game-state object pointer.
+
+  // @reclass offset=0x8 length=0x8
+  // @fflayout shape=primitive(Hex64)
+  uint64 sidecar = 2; // State-specific companion pointer.
+
+}
+
+// Owner of the state table plus current/dispatch state vectors.
+message GameStates {
+  // @reclass offset=0x8 length=0x18
+  // @fflayout shape=class(StdVector)
+  StdVector current_state_vector = 1; // Source vector for current game-state entries.
+
+  // @reclass offset=0x20 length=0x18
+  // @fflayout shape=class(StdVector)
+  StdVector dispatch_state_vector = 2; // Dispatch copy of current game-state entries.
+
+  // @reclass offset=0x40 length=0x1
+  // @fflayout shape=primitive(bool8)
+  bool dirty_flag = 3; // Marks current-state vector changes pending dispatch copy.
+
+  // @reclass offset=0x48 length=0xD0
+  // @fflayout shape=array(count=13,selected=0,element=class(GameStateEntry))
+  GameStateEntry state_table = 4; // Fixed table indexed by GameStateTypes.
+
+}
+
+// Live in-world game state. The enum table index is stable for this model.
+message InGameState {
+  // @reclass offset=0x290 length=0x8
+  // @fflayout shape=ptr(pointer=8,target=class(AreaInstance))
+  AreaInstance area_instance_data = 1; // Current area-instance data pointer.
+
+  // @reclass offset=0x400 length=0x4
+  // @fflayout shape=primitive(int32)
+  int32 ms_elapsed = 2; // Increasing in-world elapsed timer.
+
+  // @reclass offset=0x56C length=0x4
+  // @fflayout shape=primitive(int32)
+  int32 zone_switch_counter = 3; // Zone-transition counter.
+
+}
+
+// Current area instance data reached from InGameState.area_instance_data.
+message AreaInstance {
+  // @reclass offset=0x11C length=0x4
+  // @fflayout shape=primitive(uint32)
+  uint32 current_area_hash = 1; // Hash of the currently loaded area instance.
+
+  // @reclass offset=0xC4 length=0x1
+  // @fflayout shape=primitive(uint8)
+  uint32 current_area_level = 2; // Monster/area level.
+
+  // @reclass offset=0x588 length=0x18
+  // @fflayout shape=class(StdVector)
+  StdVector local_players = 3; // Vector of local player entity pointers.
+
+  // @reclass offset=0x6C0 length=0x8
+  // @fflayout shape=primitive(Hex64)
+  uint64 entity_tree_root = 4; // Root/sentinel pointer for the area entity tree.
+
+  // @reclass offset=0x6C8 length=0x4
+  // @fflayout shape=primitive(uint32)
+  uint32 entities_count = 5; // Entity-tree count stored after the root pointer.
+
+}
+
+// In-world object. Identity fields are validated by the recovered entity filter.
+message Entity {
+  // @reclass offset=0x8 length=0x8
+  // @fflayout shape=ptr(pointer=8,target=class(EntityDetails))
+  EntityDetails details = 1; // Pointer to entity metadata/details.
+
+  // @reclass offset=0x10 length=0x38
+  // @fflayout shape=class(StdBucket)
+  StdBucket component_list = 2; // Bucket/vector of component header pointers.
+
+  // @reclass offset=0x88 length=0x4
+  // @fflayout shape=primitive(uint32)
+  uint32 id = 3; // Area-local entity id.
+
+  // @reclass offset=0x8C length=0x1
+  // @fflayout shape=primitive(uint8)
+  uint32 status = 4; // Entity status byte used by the identity filter.
+
+  // @reclass offset=0x8D length=0x1
+  // @fflayout shape=primitive(uint8)
+  uint32 active_flags = 5; // Activity flags used by the identity filter.
+
+}
+
+// Entity metadata block containing path/name data and component-name lookup.
+message EntityDetails {
+  // @reclass offset=0x8 length=0x20
+  // @fflayout shape=class(StdWString)
+  StdWString name = 1; // Entity metadata path/name.
+
+  // @reclass offset=0x28 length=0x8
+  // @fflayout shape=ptr(pointer=8,target=class(ComponentLookup))
+  ComponentLookup component_lookup = 2; // Lookup table mapping component names to component indices.
+
+}
+
+// Lookup table mapping component names to indices in Entity.component_list.
+message ComponentLookup {
+  // @reclass offset=0x28 length=0x38
+  // @fflayout shape=class(StdBucket)
+  StdBucket name_and_index_bucket = 1; // Bucket/vector of component-name/index entries.
+
+}
+
+// Entry in ComponentLookup.name_and_index_bucket.
+message ComponentNameAndIndex {
+  // @reclass offset=0x0 length=0x8
+  // @fflayout shape=primitive(Hex64)
+  uint64 name = 1; // Component name C-string pointer.
+
+  // @reclass offset=0x8 length=0x4
+  // @fflayout shape=primitive(int32)
+  int32 index = 2; // Index into the owning entity component list.
+
+}
+
+// Common component header containing the owning entity pointer.
+message ComponentHeader {
+  // @reclass offset=0x8 length=0x8
+  // @fflayout shape=ptr(pointer=8,target=class(Entity))
+  Entity owner_entity = 1; // Owning entity pointer.
+
+}
+
+// Player component.
+message Player {
+  // @reclass offset=0x1B0 length=0x20
+  // @fflayout shape=class(StdWString)
+  StdWString name = 1; // Character display name.
+
+}
+
+// Life component vitals.
+message Life {
+  // @reclass offset=0x1A8 length=0x3C
+  // @fflayout shape=class(Vital)
+  Vital health = 1; // Health vital block.
+
+  // @reclass offset=0x200 length=0x3C
+  // @fflayout shape=class(Vital)
+  Vital mana = 2; // Mana vital block.
+
+  // @reclass offset=0x240 length=0x3C
+  // @fflayout shape=class(Vital)
+  Vital energy_shield = 3; // Energy shield vital block.
+
+}
+
+// One current/total/resource reservation block inside Life.
+message Vital {
+  // @reclass offset=0x8 length=0x4
+  // @fflayout shape=primitive(int32)
+  int32 unknown_stat_id0 = 1; // Constructor-written stat id; exact meaning is still unknown.
+
+  // @reclass offset=0xC length=0x4
+  // @fflayout shape=primitive(int32)
+  int32 unknown_stat_id1 = 2; // Constructor-written stat id; exact meaning is still unknown.
+
+  // @reclass offset=0x10 length=0x8
+  // @fflayout shape=ptr(pointer=8,target=class(Life))
+  Life life_component = 3; // Back pointer to owning Life component.
+
+  // @reclass offset=0x18 length=0x4
+  // @fflayout shape=primitive(int32)
+  int32 reserved_flat = 4; // Flat reserved amount.
+
+  // @reclass offset=0x1C length=0x4
+  // @fflayout shape=primitive(int32)
+  int32 reserved_percent = 5; // Percent reserved amount stored as basis points.
+
+  // @reclass offset=0x20 length=0x4
+  // @fflayout shape=primitive(int32)
+  int32 total_stat_id = 6; // Stat id used when refreshing this vital's total.
+
+  // @reclass offset=0x24 length=0x4
+  // @fflayout shape=primitive(int32)
+  int32 unknown_stat_id2 = 7; // Constructor-written stat id; exact meaning is still unknown.
+
+  // @reclass offset=0x28 length=0x4
+  // @fflayout shape=primitive(int32)
+  int32 unknown_stat_id3 = 8; // Constructor-written stat id; exact meaning is still unknown.
+
+  // @reclass offset=0x34 length=0x4
+  // @fflayout shape=primitive(int32)
+  int32 total = 9; // Current maximum value for this vital.
+
+  // @reclass offset=0x38 length=0x4
+  // @fflayout shape=primitive(int32)
+  int32 current = 10; // Current value for this vital.
+
+}

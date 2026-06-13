@@ -6,7 +6,9 @@ namespace CheatCartridge.GameHelper.GameOffsets;
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 public unsafe struct GameStateBuffer
 {
-    public const int TOTAL_STATES = 12;
+    [FrameFormatField("GameStates.state_table", Binding = FrameFormatBinding.ArrayCount)]
+    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "GameStates.state_table; Fixed table indexed by GameStateTypes.")]
+    public const int TOTAL_STATES = 13;
 
     private fixed byte _data[TOTAL_STATES * 16];
 

@@ -13,6 +13,11 @@
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+        <PackageReference Include="Microsoft.SemanticKernel" Version="1.70.0" />
+    
+        <Reference Include="EyeAuras.AI"/>
+        <Reference Include="EyeAuras.AI.Desktop"/>
+        <Reference Include="EyeAuras.AISdk"/>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="EyeAuras.SDK" Version="1.9.9801" />
