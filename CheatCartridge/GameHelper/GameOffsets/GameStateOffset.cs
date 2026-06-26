@@ -23,10 +23,10 @@ public struct GameStateOffset
     ///     docs/PoE/RE/builds/sha256-c5da3833/PathOfExileSteam/game-states/CurrentStateVector.evidence.md
     /// </summary>
     [FrameFormatField("current_state_vector")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "GameStates.current_state_vector; Source vector for current game-state entries.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "GameStates.current_state_vector; Source vector for current game-state entries.")]
     [FieldOffset(0x08)] public StdVector CurrentStatePtr;
 
     [FrameFormatField("state_table")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "GameStates.state_table; Fixed table indexed by GameStateTypes.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "GameStates.state_table; Fixed table indexed by GameStateTypes.")]
     [FieldOffset(0x48)] public GameStateBuffer States;
 }

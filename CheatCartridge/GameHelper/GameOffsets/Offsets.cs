@@ -536,19 +536,20 @@ public static class Offsets
         /// <summary>
         /// Finds the AreaInstance vector that the game accessor copies into an output local-player list.
         ///
-        /// Recovered value for build sha256-c5da3833:
-        ///     AreaInstanceOffsets.LocalPlayers: 0x588
+        /// Recovered values:
+        ///     sha256-c5da3833 AreaInstanceOffsets.LocalPlayers: 0x588
+        ///     sha256-1abda874 AreaInstanceOffsets.LocalPlayers: 0x5A0
         ///
         /// Ghidra location:
         ///     FUN_1420731D0
         ///     AreaInstance vtable slots 0x140 and 0x148 both point at this function.
         ///
         /// Relevant decompile:
-        ///     count = (*(longlong *)(AreaInstance + 0x590) -
-        ///              *(longlong *)(AreaInstance + 0x588)) >> 3
+        ///     count = (*(longlong *)(AreaInstance + LocalPlayers + 0x08) -
+        ///              *(longlong *)(AreaInstance + LocalPlayers)) >> 3
         ///
-        ///     for (entry = *(ulonglong **)(AreaInstance + 0x588);
-        ///          entry != *(ulonglong **)(AreaInstance + 0x590);
+        ///     for (entry = *(ulonglong **)(AreaInstance + LocalPlayers);
+        ///          entry != *(ulonglong **)(AreaInstance + LocalPlayers + 0x08);
         ///          entry++)
         ///     {
         ///         if (*entry != 0)
@@ -561,11 +562,11 @@ public static class Offsets
         ///     It is reached from the live AreaInstance vtable, and several
         ///     AreaInstance-family callers use virtual slot 0x140/0x148 when they
         ///     need the current controlled/local entity list. The accessor copies
-        ///     only non-null qword entries out of the vector at +0x588, which
+        ///     only non-null qword entries out of the local-player vector, which
         ///     matches the managed object model's StdVector<IntPtr> shape.
         ///
         /// Runtime extraction:
-        ///     localPlayersOffset = memory.Read<int>(moduleBase + returnedRva) // 0x588
+        ///     localPlayersOffset = memory.Read<int>(moduleBase + returnedRva)
         /// </summary>
         public const string AreaInstanceLocalPlayers = nameof(AreaInstanceLocalPlayers);
 
@@ -1610,29 +1611,33 @@ public static class Offsets
         // What this finds:
         //
         //     The AreaInstance accessor that appends non-null entries from
-        //     AreaInstance + 0x588..0x590 into a caller-provided output vector.
+        //     the AreaInstance local-player vector into a caller-provided output vector.
         //
         // Ghidra evidence:
         //
-        //     Function:
-        //       FUN_1420731D0
+        //     Old build sha256-c5da3833:
+        //       function: FUN_1420731D0
+        //       vtable RVA: 0x32C9C48
+        //       slot 0x140/0x148: 0x1420731D0
+        //       vector: AreaInstance +0x588..0x590
         //
-        //     Vtable ownership:
-        //       live AreaInstance vtable RVA: 0x32C9C48
-        //       vtable slot 0x140: 0x1420731D0
-        //       vtable slot 0x148: 0x1420731D0
+        //     New build sha256-1abda874:
+        //       function RVA: 0x2099D60
+        //       vtable RVA: 0x32EF610
+        //       slot 0x140/0x148: 0x142099D60
+        //       vector: AreaInstance +0x5A0..0x5A8
         //
         //     Important instruction sequence:
         //
-        //       1420731E7  MOV RCX, [RCX + 0x590]
-        //       1420731F2  SUB RCX, [RDI + 0x588]
+        //       142099D77  MOV RCX, [RCX + 0x5A8]
+        //       142099D82  SUB RCX, [RDI + 0x5A0]
         //       ...
-        //       142073235  MOV RSI, [RDI + 0x590]
-        //       14207323C  MOV RDI, [RDI + 0x588]
-        //       142073244  CMP RDI, RSI
-        //       142073250  MOV RAX, [RDI]
-        //       142073253  TEST RAX, RAX
-        //       142073266  MOV [RDX], RAX / append to output
+        //       142099DC5  MOV RSI, [RDI + 0x5A8]
+        //       142099DCC  MOV RDI, [RDI + 0x5A0]
+        //       142099DD4  CMP RDI, RSI
+        //       142099DE0  MOV RAX, [RDI]
+        //       142099DE3  TEST RAX, RAX
+        //       142099DF6  MOV [RDX], RAX / append to output
         //
         // Caret location:
         //
@@ -1642,13 +1647,13 @@ public static class Offsets
         //
         // Why the pattern starts in the loop setup:
         //
-        //     The count preamble also contains +0x588, but the loop setup makes
+        //     The count preamble also contains the vector offset, but the loop setup makes
         //     the vector semantics obvious: load Last, load First, compare, read
         //     each qword entry, skip zeroes, append non-zero entity pointers.
         //
         // Runtime extraction:
         //
-        //     localPlayersOffset = memory.Read<int>(moduleBase + returnedRva) // 0x588
+        //     localPlayersOffset = memory.Read<int>(moduleBase + returnedRva)
         //
         // Runtime proof:
         //
@@ -1657,7 +1662,7 @@ public static class Offsets
         //     first entity pointer matches both the current struct field and the
         //     managed object model's Player.Address.
         BytePattern.FromTemplate(
-            "48 89 74 24 38 48 8B B7 90 05 00 00 48 8B BF ^ ?? ?? ?? ?? 48 3B FE 74 ?? 0F 1F 80 00 00 00 00 48 8B 07 48 85 C0 74 ?? 48 8B 53 08",
+            "48 89 74 24 38 48 8B B7 ?? ?? ?? ?? 48 8B BF ^ ?? ?? ?? ?? 48 3B FE 74 ?? 0F 1F 80 00 00 00 00 48 8B 07 48 85 C0 74 ?? 48 8B 53 08",
             KeypointNames.AreaInstanceLocalPlayers
         ),
 
@@ -1667,34 +1672,37 @@ public static class Offsets
         // What this finds:
         //
         //     The AreaInstance base constructor's initialization of the first
-        //     tree container at AreaInstance +0x6B0. This tree is the source for
+        //     first AreaInstance entity tree container. This tree is the source for
         //     AreaInstanceOffsets.EntitiesCount, but the pattern deliberately
-        //     returns the root/sentinel pointer slot at +0x6C0.
+        //     returns the root/sentinel pointer slot.
         //
         // Ghidra evidence:
         //
-        //     Function:
-        //       FUN_14206E780
+        //     Old build sha256-c5da3833:
+        //       function: FUN_14206E780
+        //       root: AreaInstance +0x6C0
+        //       count: AreaInstance +0x6C8
         //
-        //     Unique tightened pattern location:
-        //       pattern starts at 0x14206EBCB
-        //       LEA displacement is at 0x14206EBE3
+        //     New build sha256-1abda874:
+        //       function RVA: 0x2095753
+        //       root: AreaInstance +0x6D8
+        //       count: AreaInstance +0x6E0
         //
         //     Important instruction sequence:
         //
-        //       14206EBD2  MOV qword ptr [RSI + 0x6B0], RAX
-        //       14206EBD9  MOV qword ptr [RSI + 0x6B8], RBP
-        //       14206EBE0  LEA RBX, [RSI + 0x6C0]
-        //       14206EBE7  MOV qword ptr [RSP + 0x68], RBX
-        //       14206EBEC  MOV qword ptr [RBX], RBP
-        //       14206EBEF  MOV qword ptr [RBX + 0x8], RBP
-        //       14206EBF3  MOV ECX, 0x30
-        //       14206EBF8  CALL FUN_140155B20
-        //       14206EBFD  MOV qword ptr [RAX], RAX
-        //       14206EC00  MOV qword ptr [RAX + 0x8], RAX
-        //       14206EC04  MOV qword ptr [RAX + 0x10], RAX
-        //       14206EC08  MOV word ptr [RAX + 0x18], 0x101
-        //       14206EC0E  MOV qword ptr [RBX], RAX
+        //       14209575A  MOV qword ptr [RSI + 0x6C8], RAX
+        //       142095761  MOV qword ptr [RSI + 0x6D0], RBP
+        //       142095768  LEA RBX, [RSI + 0x6D8]
+        //       14209576F  MOV qword ptr [RSP + 0x68], RBX
+        //       142095774  MOV qword ptr [RBX], RBP
+        //       142095777  MOV qword ptr [RBX + 0x8], RBP
+        //       14209577B  MOV ECX, 0x30
+        //       142095780  CALL allocator
+        //       142095785  MOV qword ptr [RAX], RAX
+        //       142095788  MOV qword ptr [RAX + 0x8], RAX
+        //       14209578C  MOV qword ptr [RAX + 0x10], RAX
+        //       142095790  MOV word ptr [RAX + 0x18], 0x101
+        //       142095796  MOV qword ptr [RBX], RAX
         //
         // Caret location:
         //
@@ -1704,15 +1712,16 @@ public static class Offsets
         //
         // Why the pattern includes the preceding +0x6B0/+0x6B8 writes:
         //
-        //     The same constructor initializes a second adjacent tree at +0x6D0.
+        //     The same constructor initializes a second adjacent tree immediately
+        //     after the first one.
         //     The shorter sentinel-allocation sequence therefore matches twice.
-        //     Including the container vtable/data writes at +0x6B0/+0x6B8 makes
-        //     the pattern select the first tree, whose count is +0x6C8.
+        //     Including the container vtable/data writes before the root makes
+        //     the pattern select the first tree, whose count is root + pointer size.
         //
         // Runtime derivation:
         //
-        //     entityTreeRootOffset = memory.Read<int>(moduleBase + returnedRva) // 0x6C0
-        //     entitiesCountOffset  = entityTreeRootOffset + IntPtr.Size         // 0x6C8
+        //     entityTreeRootOffset = memory.Read<int>(moduleBase + returnedRva)
+        //     entitiesCountOffset  = entityTreeRootOffset + IntPtr.Size
         //
         // Runtime proof:
         //
@@ -1720,7 +1729,7 @@ public static class Offsets
         //     recovered count from live AreaInstance memory and verifies it
         //     equals both AreaInstanceOffsets.EntitiesCount and the object model.
         BytePattern.FromTemplate(
-            "48 8D 05 ?? ?? ?? ?? 48 89 86 B0 06 00 00 48 89 AE B8 06 00 00 48 8D 9E ^ ?? ?? ?? ?? 48 89 5C 24 ?? 48 89 2B 48 89 6B 08 B9 30 00 00 00 E8 ?? ?? ?? ?? 48 89 00 48 89 40 08 48 89 40 10 66 C7 40 18 01 01 48 89 03",
+            "48 8D 05 ?? ?? ?? ?? 48 89 86 ?? ?? ?? ?? 48 89 AE ?? ?? ?? ?? 48 8D 9E ^ ?? ?? ?? ?? 48 89 5C 24 ?? 48 89 2B 48 89 6B 08 B9 30 00 00 00 E8 ?? ?? ?? ?? 48 89 00 48 89 40 08 48 89 40 10 66 C7 40 18 01 01 48 89 03",
             KeypointNames.AreaInstanceEntityTreeRoot
         ),
 
@@ -1761,11 +1770,13 @@ public static class Offsets
         //
         // Why this proves Entity ownership:
         //
-        //     The code starts from AreaInstance +0x6C0, the same tree-root slot
-        //     recovered by AreaInstanceEntityTreeRoot. It then reads the node
-        //     payload at node +0x28 into RDI and uses RDI as the entity pointer.
-        //     The filter fields are therefore Entity-relative, not AreaInstance-
-        //     relative and not component-relative.
+        //     The code starts from the same AreaInstance tree-root slot recovered
+        //     by AreaInstanceEntityTreeRoot. That slot moved from 0x6C0 in
+        //     sha256-c5da3833 to 0x6D8 in sha256-1abda874, so the constructor
+        //     displacement is deliberately wildcarded here. The filter then
+        //     reads the node payload at node +0x28 into RDI and uses RDI as the
+        //     entity pointer. The filter fields are therefore Entity-relative,
+        //     not AreaInstance-relative and not component-relative.
         //
         // Runtime extraction:
         //
@@ -1775,7 +1786,7 @@ public static class Offsets
         //     entityIdUpperBound             = memory.Read<uint>(moduleBase + returnedRva + 0x0D) // 0x40000000
         //     entityActiveFlagOffset         = memory.Read<int>(moduleBase + returnedRva + 0x15) // 0x8D
         //     entityActiveFlagRequiredMask   = memory.Read<byte>(moduleBase + returnedRva + 0x19) // 0x04
-        //     entityTreeRootOffset           = memory.Read<int>(moduleBase + returnedRva - 0x18) // 0x6C0
+        //     entityTreeRootOffset           = memory.Read<int>(moduleBase + returnedRva - 0x18) // 0x6C0 / 0x6D8
         //
         // Runtime proof:
         //
@@ -1784,7 +1795,7 @@ public static class Offsets
         //     flags through these recovered offsets and masks, and compares the
         //     recovered predicate result to the object model's player Id/IsValid.
         BytePattern.FromTemplate(
-            "48 8B 86 C0 06 00 00 48 8B 18 48 3B D8 0F 84 ?? ?? ?? ?? 66 90 48 8B 7B 28 F6 87 ^ ?? ?? ?? ?? 01 75 ?? 81 BF ?? ?? ?? ?? 00 00 00 40 73 ?? F6 87 ?? ?? ?? ?? 04",
+            "48 8B 86 ?? ?? ?? ?? 48 8B 18 48 3B D8 0F 84 ?? ?? ?? ?? 66 90 48 8B 7B 28 F6 87 ^ ?? ?? ?? ?? 01 75 ?? 81 BF ?? ?? ?? ?? 00 00 00 40 73 ?? F6 87 ?? ?? ?? ?? 04",
             KeypointNames.EntityIdentityFilter
         ),
 
@@ -2221,8 +2232,8 @@ public static class Offsets
         //     4C 8D B6 ^ ?? ?? ?? ??
         //
         // This lands on the four-byte displacement in LEA R14, [RSI + 0x1A8].
-        // The integration test reads additional compact offsets from this same
-        // constructor block:
+        // The integration test reads additional compact offsets from this
+        // health vital block:
         //
         //       +0x07 -> VitalStruct.UnknownStatId0 field offset (0x08)
         //       +0x08 -> Health UnknownStatId0 value (0x3334)
@@ -2233,14 +2244,13 @@ public static class Offsets
         //       +0x31 -> VitalStruct.UnknownStatId2 field offset (0x24)
         //       +0x39 -> VitalStruct.UnknownStatId3 field offset (0x28)
         //       +0x3A -> Health UnknownStatId3 value (0x759)
-        //       +0x90 -> LifeOffset.Mana offset (0x200)
-        //       +0x97 -> Mana UnknownStatId0 field offset (0x08)
-        //       +0x98 -> Mana UnknownStatId0 value (0x6986)
-        //       +0x9F -> Mana UnknownStatId1 field offset (0x0C)
-        //       +0xA0 -> Mana UnknownStatId1 value (0x6986)
-        //       +0xC3 -> Mana UnknownStatId3 value (0x1C9C)
-        //       +0xFC -> LifeOffset.EnergyShield offset (0x240)
-        //       +0x114 -> EnergyShield UnknownStatId3 value (0x4DE5)
+        //
+        //     Mana and Energy Shield starts are intentionally recovered from
+        //     LifeComponentVitalOffsets instead of fixed offsets inside this
+        //     constructor. In sha256-1abda874 the compiler moved the later
+        //     constructor blocks to different registers/encodings, while this
+        //     health block kept a stable length and still proves the VitalStruct
+        //     header/stat-id field offsets.
         //
         // Nuance:
         //
@@ -2249,7 +2259,7 @@ public static class Offsets
         //     the Energy Shield value is recovered from the call setup rather
         //     than a direct [R12 +0x28] store in this block.
         BytePattern.FromTemplate(
-            "4C 8D B6 ^ ?? ?? ?? ?? 41 C7 46 08 ?? ?? ?? ?? 41 C7 46 0C ?? ?? ?? ?? 49 89 76 10 4D 89 6E 18 48 8D 3D ?? ?? ?? ?? 49 89 3E 41 C7 46 20 ?? ?? ?? ?? 41 C7 46 24 ?? ?? ?? ?? 41 C7 46 28 ?? ?? ?? ?? 45 88 6E 2C 45 89 6E 30 48 8B 86 ?? ?? ?? ?? 48 8B 88 ?? ?? ?? ?? 48 8B 01 BA ?? ?? ?? ?? FF 10 41 89 46 34 41 89 46 38 41 C7 46 40 ?? ?? ?? ?? 49 C7 46 44 ?? ?? ?? ?? 45 88 6E 4C 48 8D 05 ?? ?? ?? ?? 49 89 06 66 45 89 6E 50 45 88 6E 52 4C 8D BE ?? ?? ?? ?? 41 C7 47 08 ?? ?? ?? ?? 41 C7 47 0C ?? ?? ?? ?? 49 89 77 10 4D 89 6F 18 49 89 3F 41 C7 47 20 ?? ?? ?? ?? 41 C7 47 24 ?? ?? ?? ?? 41 C7 47 28 ?? ?? ?? ?? 45 88 6F 2C 45 89 6F 30 48 8B 86 ?? ?? ?? ?? 48 8B 88 ?? ?? ?? ?? 48 8B 01 BA ?? ?? ?? ?? FF 10 41 89 47 34 41 89 47 38 48 8D 05 ?? ?? ?? ?? 49 89 07 4C 8D A6 ?? ?? ?? ?? C7 44 24 30 ?? ?? ?? ?? C7 44 24 28 ?? ?? ?? ?? C7 44 24 20 ?? ?? ?? ?? 41 B9 ?? ?? ?? ?? 41 B8 ?? ?? ?? ?? 48 8B D6 49 8B CC E8",
+            "4C 8D ?? ^ ?? ?? ?? ?? 41 C7 ?? 08 ?? ?? ?? ?? 41 C7 ?? 0C ?? ?? ?? ?? 49 89 ?? 10 ?? 89 ?? 18 ?? 8D ?? ?? ?? ?? ?? ?? 89 ?? 41 C7 ?? 20 ?? ?? ?? ?? 41 C7 ?? 24 ?? ?? ?? ?? 41 C7 ?? 28 ?? ?? ?? ?? ?? 88 ?? 2C ?? 89 ?? 30 48 8B 86 ?? ?? ?? ?? 48 8B 88 ?? ?? ?? ?? 48 8B 01 BA ?? ?? ?? ?? FF 10 ?? 89 ?? 34 ?? 89 ?? 38",
             KeypointNames.LifeVitalConstructorShape
         ),
 

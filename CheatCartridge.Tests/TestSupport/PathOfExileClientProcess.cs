@@ -24,7 +24,7 @@ public static class PathOfExileClientProcess
     /// WHAT: Names the process backend CheatCartridge integration tests are expected to use.
     /// HOW: Exposes a single constant for scaffold tests and progress output.
     /// </summary>
-    public static string ProcessApiName => "LocalProcess";
+    public static string ProcessApiName => LocalProcessRuntime.ProcessApiName;
 
     /// <summary>
     /// WHAT: Resolves a live Path Of Exile process or skips the integration test clearly.

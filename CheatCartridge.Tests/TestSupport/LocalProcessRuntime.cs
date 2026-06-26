@@ -11,6 +11,24 @@ namespace CheatCartridge.Tests.TestSupport;
 public static class LocalProcessRuntime
 {
     /// <summary>
+    /// WHAT: Names the concrete local process backend used by live integration tests.
+    /// HOW: Matches the current EyeAuras.Memory module API exposed by local EyeAuras checkouts.
+    /// </summary>
+    public static string ProcessApiName => "NativeLocalProcess";
+
+    /// <summary>
+    /// WHAT: Opens a process through the current EyeAuras local-memory backend.
+    /// HOW: Uses read-only native local process access because CheatCartridge only reads PoE memory.
+    /// </summary>
+    public static IProcess OpenProcess(int processId)
+    {
+        return NativeLocalProcess.ByProcessId(
+            processId,
+            isReadOnly: true,
+            omitCreateThreadPermissions: true);
+    }
+
+    /// <summary>
     /// WHAT: Skips the test when LocalProcess is unavailable in the current runtime.
     /// HOW: Performs a self-process attach and converts known runtime-loading failures into NUnit skips.
     /// </summary>
@@ -18,7 +36,7 @@ public static class LocalProcessRuntime
     {
         try
         {
-            using var process = LocalProcess.ByProcessId(Process.GetCurrentProcess().Id);
+            using var process = OpenProcess(Process.GetCurrentProcess().Id);
             TestContext.Progress.WriteLine($"[local-process] Runtime available: {process.ProcessName} ({process.ProcessId})");
         }
         catch (NotImplementedException ex)
@@ -36,6 +54,14 @@ public static class LocalProcessRuntime
         catch (FileLoadException ex)
         {
             Assert.Ignore($"EyeAuras LocalProcess dependency could not be loaded: {ex.Message}");
+        }
+        catch (MissingMethodException ex)
+        {
+            Assert.Ignore($"EyeAuras LocalProcess API is not compatible with these tests: {ex.Message}");
+        }
+        catch (TypeLoadException ex)
+        {
+            Assert.Ignore($"EyeAuras LocalProcess API is not compatible with these tests: {ex.Message}");
         }
     }
 }

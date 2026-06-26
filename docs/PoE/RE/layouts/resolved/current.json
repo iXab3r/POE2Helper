@@ -1,8 +1,8 @@
 ﻿{
-  "BuildId": "sha256-c5da3833",
-  "SourceSha256": "c5da38334762a28ceb77a65e16e741a7fddb19ca38c4f414566e1024d4e4637d",
+  "BuildId": "sha256-1abda874",
+  "SourceSha256": "1abda8749ba496202be450554a4305ecbec454dcaaee1d766be09b8e80bdb1f2",
   "ModuleName": "PathOfExileSteam.exe",
   "ModuleKey": "PathOfExileSteam",
-  "LayoutPath": "docs/PoE/RE/layouts/resolved/sha256-c5da3833/PathOfExileSteam/poe-game-model.sha256-c5da3833.ff.proto",
-  "GeneratedAtUtc": "2026-06-13T12:25:29.464573+00:00"
+  "LayoutPath": "docs/PoE/RE/layouts/resolved/sha256-1abda874/PathOfExileSteam/poe-game-model.sha256-1abda874.ff.proto",
+  "GeneratedAtUtc": "2026-06-26T01:51:27.2215998+00:00"
 }

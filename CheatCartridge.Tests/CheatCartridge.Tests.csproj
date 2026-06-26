@@ -11,6 +11,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
+        <EyeAurasRuntimeAssembliesDir Condition="'$(EyeAurasRuntimeAssembliesDir)' == '' And Exists('$(MSBuildThisFileDirectory)..\..\EyeAuras-dll\Sources\bin\modules\EyeAuras.Memory\EyeAuras.Memory.dll')">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\EyeAuras-dll\Sources\bin\modules\EyeAuras.Memory'))</EyeAurasRuntimeAssembliesDir>
         <EyeAurasRuntimeAssembliesDir Condition="'$(EyeAurasRuntimeAssembliesDir)' == '' And Exists('$(MSBuildThisFileDirectory)..\..\EyeAuras\Sources\EyeAuras.SDK\bin\EyeAuras.Memory.dll')">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\EyeAuras\Sources\EyeAuras.SDK\bin'))</EyeAurasRuntimeAssembliesDir>
     </PropertyGroup>
 

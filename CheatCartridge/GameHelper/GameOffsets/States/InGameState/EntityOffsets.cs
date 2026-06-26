@@ -7,7 +7,7 @@ namespace CheatCartridge.GameHelper.GameOffsets.States.InGameState;
 public struct EntityOffsets
 {
     [FieldOffset(0x00)] public ItemStruct ItemBase;
-    
+
     /// <summary>
     /// Area-local entity id.
     ///
@@ -22,9 +22,9 @@ public struct EntityOffsets
     ///     from the same compact filter that also proves the status byte at +0x8C.
     /// </summary>
     [FrameFormatField("id")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "Entity.id; Area-local entity id.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "Entity.id; Area-local entity id.")]
     [FieldOffset(0x88)] public uint Id;
-    
+
     /// <summary>
     /// Entity status/validity byte.
     ///
@@ -40,6 +40,6 @@ public struct EntityOffsets
     ///     live status byte as the validity rule.
     /// </summary>
     [FrameFormatField("status")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "Entity.status; Entity status byte used by the identity filter.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "Entity.status; Entity status byte used by the identity filter.")]
     [FieldOffset(0x8C)] public byte IsValid;
 }

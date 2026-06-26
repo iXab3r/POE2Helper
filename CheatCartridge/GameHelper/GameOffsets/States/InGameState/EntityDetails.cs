@@ -26,13 +26,13 @@ public struct EntityDetails
     ///     proving this StdWString starts at EntityDetails +0x08.
     /// </summary>
     [FrameFormatField("name")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "EntityDetails.name; Entity metadata path/name.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "EntityDetails.name; Entity metadata path/name.")]
     [FieldOffset(0x08)] public StdWString name;
-    
+
     /// <summary>
-    /// The very first 
+    /// The very first
     /// </summary>
     [FrameFormatField("component_lookup")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "EntityDetails.component_lookup; Lookup table mapping component names to component indices.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "EntityDetails.component_lookup; Lookup table mapping component names to component indices.")]
     [FieldOffset(0x28)] public IntPtr ComponentLookUpPtr;
 }

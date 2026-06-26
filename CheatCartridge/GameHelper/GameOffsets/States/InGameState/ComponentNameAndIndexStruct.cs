@@ -7,11 +7,11 @@ namespace CheatCartridge.GameHelper.GameOffsets.States.InGameState;
 public struct ComponentNameAndIndexStruct
 {
     [FrameFormatField("name")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "ComponentNameAndIndex.name; Component name C-string pointer.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "ComponentNameAndIndex.name; Component name C-string pointer.")]
     [FieldOffset(0x00)] public IntPtr NamePtr;
 
     [FrameFormatField("index")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "ComponentNameAndIndex.index; Index into the owning entity component list.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "ComponentNameAndIndex.index; Index into the owning entity component list.")]
     [FieldOffset(0x08)] public int Index;
 
     [FieldOffset(0x0C)] public int PAD_0xC;

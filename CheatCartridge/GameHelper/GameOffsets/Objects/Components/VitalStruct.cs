@@ -10,25 +10,25 @@ public struct VitalStruct
     ///     Constructor-written stat id. Exact runtime meaning is not proven yet.
     /// </summary>
     [FrameFormatField("unknown_stat_id0")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "Vital.unknown_stat_id0; Constructor-written stat id; exact meaning is still unknown.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "Vital.unknown_stat_id0; Constructor-written stat id; exact meaning is still unknown.")]
     [FieldOffset(0x08)] public int UnknownStatId0;
 
     /// <summary>
     ///     Constructor-written stat id. Exact runtime meaning is not proven yet.
     /// </summary>
     [FrameFormatField("unknown_stat_id1")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "Vital.unknown_stat_id1; Constructor-written stat id; exact meaning is still unknown.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "Vital.unknown_stat_id1; Constructor-written stat id; exact meaning is still unknown.")]
     [FieldOffset(0x0C)] public int UnknownStatId1;
 
     [FrameFormatField("life_component")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "Vital.life_component; Back pointer to owning Life component.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "Vital.life_component; Back pointer to owning Life component.")]
     [FieldOffset(0x10)] public IntPtr LifeComponentPtr;
 
     /// <summary>
     ///     e.g. Clarity reserve flat Vital
     /// </summary>
     [FrameFormatField("reserved_flat")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "Vital.reserved_flat; Flat reserved amount.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "Vital.reserved_flat; Flat reserved amount.")]
     [FieldOffset(0x18)] public int ReservedFlat;
 
     /// <summary>
@@ -37,21 +37,21 @@ public struct VitalStruct
     ///     Note that it's an integer, this is due to 20.23% is stored as 2023
     /// </summary>
     [FrameFormatField("reserved_percent")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "Vital.reserved_percent; Percent reserved amount stored as basis points.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "Vital.reserved_percent; Percent reserved amount stored as basis points.")]
     [FieldOffset(0x1C)] public int ReservedPercent;
 
     /// <summary>
     ///     Stat id used by the game when refreshing this vital's total.
     /// </summary>
     [FrameFormatField("total_stat_id")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "Vital.total_stat_id; Stat id used when refreshing this vital's total.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "Vital.total_stat_id; Stat id used when refreshing this vital's total.")]
     [FieldOffset(0x20)] public int TotalStatId;
 
     /// <summary>
     ///     Constructor-written stat id. Exact runtime meaning is not proven yet.
     /// </summary>
     [FrameFormatField("unknown_stat_id2")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "Vital.unknown_stat_id2; Constructor-written stat id; exact meaning is still unknown.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "Vital.unknown_stat_id2; Constructor-written stat id; exact meaning is still unknown.")]
     [FieldOffset(0x24)] public int UnknownStatId2;
 
     /// <summary>
@@ -59,15 +59,15 @@ public struct VitalStruct
     ///     regeneration value, but the Life constructor writes integer ids here.
     /// </summary>
     [FrameFormatField("unknown_stat_id3")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "Vital.unknown_stat_id3; Constructor-written stat id; exact meaning is still unknown.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "Vital.unknown_stat_id3; Constructor-written stat id; exact meaning is still unknown.")]
     [FieldOffset(0x28)] public int UnknownStatId3;
 
     [FrameFormatField("total")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "Vital.total; Current maximum value for this vital.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "Vital.total; Current maximum value for this vital.")]
     [FieldOffset(0x34)] public int Total;
 
     [FrameFormatField("current")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "Vital.current; Current value for this vital.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "Vital.current; Current value for this vital.")]
     [FieldOffset(0x38)] public int Current;
 
     /// <summary>

@@ -10,6 +10,6 @@ public struct PlayerOffsets
     [FieldOffset(0x000)] public ComponentHeader Header;
 
     [FrameFormatField("name")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "Player.name; Character display name.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "Player.name; Character display name.")]
     [FieldOffset(0x1B0)] public StdWString Name;
 }

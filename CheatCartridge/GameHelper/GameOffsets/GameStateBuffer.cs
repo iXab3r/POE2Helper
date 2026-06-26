@@ -7,7 +7,7 @@ namespace CheatCartridge.GameHelper.GameOffsets;
 public unsafe struct GameStateBuffer
 {
     [FrameFormatField("GameStates.state_table", Binding = FrameFormatBinding.ArrayCount)]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "GameStates.state_table; Fixed table indexed by GameStateTypes.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "GameStates.state_table; Fixed table indexed by GameStateTypes.")]
     public const int TOTAL_STATES = 13;
 
     private fixed byte _data[TOTAL_STATES * 16];
@@ -31,7 +31,7 @@ public unsafe struct GameStateBuffer
             yield return ((GameStateTypes) i, this[i]);
         }
     }
-        
+
     /// <summary>
     /// Accesses the elements of the buffer by index.
     /// </summary>

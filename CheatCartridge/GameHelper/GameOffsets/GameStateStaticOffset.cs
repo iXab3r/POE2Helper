@@ -19,6 +19,6 @@ public struct GameStateStaticOffset
     ///     docs/PoE/RE/builds/sha256-c5da3833/PathOfExileSteam/game-states/GameStatesSingleton.evidence.md
     /// </summary>
     [FrameFormatField("owner")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "GameStateStaticWrapper.owner; Pointer to the GameStates owner object.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "GameStateStaticWrapper.owner; Pointer to the GameStates owner object.")]
     [FieldOffset(0x00)] public IntPtr GameState;
 }

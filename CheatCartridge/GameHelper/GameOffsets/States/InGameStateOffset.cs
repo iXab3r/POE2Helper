@@ -24,14 +24,14 @@ public struct InGameStateOffset
     /// displacement, different owner. Keep those separate.
     /// </summary>
     [FrameFormatField("zone_switch_counter")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "InGameState.zone_switch_counter; Zone-transition counter.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "InGameState.zone_switch_counter; Zone-transition counter.")]
     [FieldOffset(0x56C)] public int ZoneSwitchCounter;
 
     /// <summary>
     /// Right after this ptr there is some "ticking" number (not increasing, just oscillating 5000-15000)
     /// </summary>
     [FrameFormatField("area_instance_data")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "InGameState.area_instance_data; Current area-instance data pointer.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "InGameState.area_instance_data; Current area-instance data pointer.")]
     [FieldOffset(0x290)] public IntPtr AreaInstanceData;
 
     /// <summary>
@@ -56,6 +56,6 @@ public struct InGameStateOffset
     /// evidence show it is a 32-bit value.
     /// </summary>
     [FrameFormatField("ms_elapsed")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "InGameState.ms_elapsed; Increasing in-world elapsed timer.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "InGameState.ms_elapsed; Increasing in-world elapsed timer.")]
     [FieldOffset(0x400)] public int MsElapsed;
 }

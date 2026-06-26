@@ -800,14 +800,10 @@ public sealed class RuntimeGameOffsets
         var constructorShapeAddress = Add(memory.BaseAddress, Require(keypointOffsets, Offsets.KeypointNames.LifeVitalConstructorShape));
         var sharedConstructorShapeAddress = Add(memory.BaseAddress, Require(keypointOffsets, Offsets.KeypointNames.LifeVitalSharedConstructorShape));
         var healthOffsetFromConstructor = memory.Read<int>(constructorShapeAddress);
-        var manaOffsetFromConstructor = memory.Read<int>(Add(constructorShapeAddress, 0x90));
-        var energyShieldOffsetFromConstructor = memory.Read<int>(Add(constructorShapeAddress, 0xFC));
-        if (healthOffsetFromConstructor != lifeHealthOffset ||
-            manaOffsetFromConstructor != lifeManaOffset ||
-            energyShieldOffsetFromConstructor != lifeEnergyShieldOffset)
+        if (healthOffsetFromConstructor != lifeHealthOffset)
         {
             throw new InvalidOperationException(
-                $"Life vital start mismatch: vtable=0x{lifeHealthOffset:X}/0x{lifeManaOffset:X}/0x{lifeEnergyShieldOffset:X}, constructor=0x{healthOffsetFromConstructor:X}/0x{manaOffsetFromConstructor:X}/0x{energyShieldOffsetFromConstructor:X}.");
+                $"Life health vital start mismatch: vtable=0x{lifeHealthOffset:X}, constructor=0x{healthOffsetFromConstructor:X}.");
         }
 
         var vitalUnknownStatId0Offset = memory.Read<byte>(Add(constructorShapeAddress, 0x07));

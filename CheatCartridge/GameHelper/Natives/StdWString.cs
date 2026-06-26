@@ -7,7 +7,7 @@ namespace CheatCartridge.GameHelper.Natives;
 public struct StdWString
 {
     [FrameFormatField("buffer_or_inline0")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "StdWString.buffer_or_inline0; External buffer pointer or first inline UTF-16 characters; inline capacity limit is 7.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "StdWString.buffer_or_inline0; External buffer pointer or first inline UTF-16 characters; inline capacity limit is 7.")]
     public IntPtr Buffer;
 
     //// PlayerComponentName proves the current SSO shape:
@@ -16,16 +16,16 @@ public struct StdWString
     //// The production object model reads this struct directly; FF tooling can
     //// refresh these offsets when the native string layout changes.
     [FrameFormatField("inline1")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "StdWString.inline1; Tail of inline UTF-16 storage.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "StdWString.inline1; Tail of inline UTF-16 storage.")]
     public IntPtr ReservedBytes;
 
     [FrameFormatField("length")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "StdWString.length; UTF-16 character length.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "StdWString.length; UTF-16 character length.")]
     public int Length; // according to debugger this is long but for now int is working fine.
     public int PAD_14;
 
     [FrameFormatField("capacity")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "StdWString.capacity; UTF-16 character capacity.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "StdWString.capacity; UTF-16 character capacity.")]
     public int Capacity; // according to debugger this is long but for now int is working fine.
     public int PAD_1C;
 

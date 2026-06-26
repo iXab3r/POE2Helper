@@ -28,6 +28,6 @@ public struct ComponentHeader
     ///     docs/PoE/RE/builds/sha256-c5da3833/PathOfExileSteam/game-states/ComponentHeader.evidence.md
     /// </summary>
     [FrameFormatField("owner_entity")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "ComponentHeader.owner_entity; Owning entity pointer.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "ComponentHeader.owner_entity; Owning entity pointer.")]
     [FieldOffset(0x0008)] public IntPtr EntityPtr;
 }

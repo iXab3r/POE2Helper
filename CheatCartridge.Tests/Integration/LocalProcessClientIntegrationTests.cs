@@ -45,7 +45,7 @@ public sealed class LocalProcessClientIntegrationTests
         TestContext.Progress.WriteLine($"[poe-client] Target: {PathOfExileClientProcess.Describe(targetProcess)}");
 
         // When
-        using var process = LocalProcess.ByProcessId(targetProcess.Id);
+        using var process = LocalProcessRuntime.OpenProcess(targetProcess.Id);
         var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
         using var memory = process.MemoryOfModule(moduleName);
 
@@ -70,7 +70,7 @@ public sealed class LocalProcessClientIntegrationTests
         TestContext.Progress.WriteLine($"[poe-client] Target: {PathOfExileClientProcess.Describe(targetProcess)}");
 
         // When
-        using var process = LocalProcess.ByProcessId(targetProcess.Id);
+        using var process = LocalProcessRuntime.OpenProcess(targetProcess.Id);
         var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
         using var memory = process.MemoryOfModule(moduleName);
         using var game = new TheGame(Mock.Of<IFluentLog>(), memory);
@@ -98,6 +98,12 @@ public sealed class LocalProcessClientIntegrationTests
                 $"hp={life.Health.Current}/{life.Health.Total}, " +
                 $"mp={life.Mana.Current}/{life.Mana.Total}, " +
                 $"es={life.EnergyShield.Current}/{life.EnergyShield.Total}");
+
+            TestContext.Progress.WriteLine(
+                "[poe-vital-stats] " +
+                $"hp=0x{life.Health.UnknownStatId0:X}/0x{life.Health.UnknownStatId1:X}/0x{life.Health.UnknownStatId2:X}/0x{life.Health.UnknownStatId3:X}, " +
+                $"mp=0x{life.Mana.UnknownStatId0:X}/0x{life.Mana.UnknownStatId1:X}/0x{life.Mana.UnknownStatId2:X}/0x{life.Mana.UnknownStatId3:X}, " +
+                $"es=0x{life.EnergyShield.UnknownStatId0:X}/0x{life.EnergyShield.UnknownStatId1:X}/0x{life.EnergyShield.UnknownStatId2:X}/0x{life.EnergyShield.UnknownStatId3:X}");
         }
 
         // Then
@@ -139,7 +145,7 @@ public sealed class LocalProcessClientIntegrationTests
         TestContext.Progress.WriteLine($"[poe-client] Target: {PathOfExileClientProcess.Describe(targetProcess)}");
 
         // When
-        using var process = LocalProcess.ByProcessId(targetProcess.Id);
+        using var process = LocalProcessRuntime.OpenProcess(targetProcess.Id);
         var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
         using var memory = process.MemoryOfModule(moduleName);
         var capturedAt = DateTimeOffset.UtcNow;
@@ -218,7 +224,7 @@ public sealed class LocalProcessClientIntegrationTests
         TestContext.Progress.WriteLine($"[poe-client] Target: {PathOfExileClientProcess.Describe(targetProcess)}");
 
         // When
-        using var process = LocalProcess.ByProcessId(targetProcess.Id);
+        using var process = LocalProcessRuntime.OpenProcess(targetProcess.Id);
         var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
         using var memory = process.MemoryOfModule(moduleName);
 
@@ -275,7 +281,7 @@ public sealed class LocalProcessClientIntegrationTests
         TestContext.Progress.WriteLine($"[poe-client] Target: {PathOfExileClientProcess.Describe(targetProcess)}");
 
         // When
-        using var process = LocalProcess.ByProcessId(targetProcess.Id);
+        using var process = LocalProcessRuntime.OpenProcess(targetProcess.Id);
         var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
         using var memory = process.MemoryOfModule(moduleName);
 
@@ -341,7 +347,7 @@ public sealed class LocalProcessClientIntegrationTests
         TestContext.Progress.WriteLine($"[poe-client] Target: {PathOfExileClientProcess.Describe(targetProcess)}");
 
         // When
-        using var process = LocalProcess.ByProcessId(targetProcess.Id);
+        using var process = LocalProcessRuntime.OpenProcess(targetProcess.Id);
         var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
         using var memory = process.MemoryOfModule(moduleName);
 
@@ -430,7 +436,7 @@ public sealed class LocalProcessClientIntegrationTests
         TestContext.Progress.WriteLine($"[poe-client] Target: {PathOfExileClientProcess.Describe(targetProcess)}");
 
         // When
-        using var process = LocalProcess.ByProcessId(targetProcess.Id);
+        using var process = LocalProcessRuntime.OpenProcess(targetProcess.Id);
         var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
         using var memory = process.MemoryOfModule(moduleName);
 
@@ -500,7 +506,7 @@ public sealed class LocalProcessClientIntegrationTests
         TestContext.Progress.WriteLine($"[poe-client] Target: {PathOfExileClientProcess.Describe(targetProcess)}");
 
         // When
-        using var process = LocalProcess.ByProcessId(targetProcess.Id);
+        using var process = LocalProcessRuntime.OpenProcess(targetProcess.Id);
         var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
         using var memory = process.MemoryOfModule(moduleName);
         var runtimeOffsets = RuntimeGameOffsets.Resolve(memory);
@@ -575,7 +581,7 @@ public sealed class LocalProcessClientIntegrationTests
         runtimeOffsets.AreaInstanceCurrentAreaLevelOffset.ShouldBe(Marshal.OffsetOf<AreaInstanceOffsets>(nameof(AreaInstanceOffsets.CurrentAreaLevel)).ToInt32());
         runtimeOffsets.AreaInstanceCurrentAreaHashOffset.ShouldBe(Marshal.OffsetOf<AreaInstanceOffsets>(nameof(AreaInstanceOffsets.CurrentAreaHash)).ToInt32());
         runtimeOffsets.AreaInstanceLocalPlayersOffset.ShouldBe(Marshal.OffsetOf<AreaInstanceOffsets>(nameof(AreaInstanceOffsets.LocalPlayers)).ToInt32());
-        runtimeOffsets.AreaInstanceEntityTreeRootOffset.ShouldBe(0x6C0);
+        runtimeOffsets.AreaInstanceEntityTreeRootOffset.ShouldBe(Marshal.OffsetOf<AreaInstanceOffsets>(nameof(AreaInstanceOffsets.EntitiesCount)).ToInt32() - IntPtr.Size);
         runtimeOffsets.AreaInstanceEntitiesCountOffset.ShouldBe(Marshal.OffsetOf<AreaInstanceOffsets>(nameof(AreaInstanceOffsets.EntitiesCount)).ToInt32());
 
         currentStateAddress.ShouldBe(inGameEntry.X, "The test requires the client to be loaded in-world.");
@@ -605,7 +611,7 @@ public sealed class LocalProcessClientIntegrationTests
         TestContext.Progress.WriteLine($"[poe-client] Target: {PathOfExileClientProcess.Describe(targetProcess)}");
 
         // When
-        using var process = LocalProcess.ByProcessId(targetProcess.Id);
+        using var process = LocalProcessRuntime.OpenProcess(targetProcess.Id);
         var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
         using var memory = process.MemoryOfModule(moduleName);
         var runtimeOffsets = RuntimeGameOffsets.Resolve(memory);
@@ -784,7 +790,7 @@ public sealed class LocalProcessClientIntegrationTests
         TestContext.Progress.WriteLine($"[poe-client] Target: {PathOfExileClientProcess.Describe(targetProcess)}");
 
         // When
-        using var process = LocalProcess.ByProcessId(targetProcess.Id);
+        using var process = LocalProcessRuntime.OpenProcess(targetProcess.Id);
         var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
         using var memory = process.MemoryOfModule(moduleName);
 
@@ -860,7 +866,7 @@ public sealed class LocalProcessClientIntegrationTests
         TestContext.Progress.WriteLine($"[poe-client] Target: {PathOfExileClientProcess.Describe(targetProcess)}");
 
         // When
-        using var process = LocalProcess.ByProcessId(targetProcess.Id);
+        using var process = LocalProcessRuntime.OpenProcess(targetProcess.Id);
         var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
         using var memory = process.MemoryOfModule(moduleName);
 
@@ -932,7 +938,7 @@ public sealed class LocalProcessClientIntegrationTests
         TestContext.Progress.WriteLine($"[poe-client] Target: {PathOfExileClientProcess.Describe(targetProcess)}");
 
         // When
-        using var process = LocalProcess.ByProcessId(targetProcess.Id);
+        using var process = LocalProcessRuntime.OpenProcess(targetProcess.Id);
         var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
         using var memory = process.MemoryOfModule(moduleName);
 
@@ -940,7 +946,12 @@ public sealed class LocalProcessClientIntegrationTests
             .GetOffsets(memory, Offsets.Patterns)
             .ToDictionary(x => x.Key.Name!, x => x.Value);
         var keypointOffsets = MemoryUtils
-            .GetOffsets(memory, Offsets.KeypointPatterns)
+            .GetOffsets(
+                memory,
+                SelectKeypointPatterns(
+                    Offsets.KeypointNames.GameStateTableShape,
+                    Offsets.KeypointNames.InGameStateAreaInstanceData,
+                    Offsets.KeypointNames.AreaInstanceLocalPlayers))
             .ToDictionary(x => x.Key.Name!, x => x.Value);
 
         var gameStatesGlobalSlot = ResolveRipRelativeSlot(memory, staticPatternOffsets[nameof(GameStates)]);
@@ -1013,7 +1024,7 @@ public sealed class LocalProcessClientIntegrationTests
         TestContext.Progress.WriteLine($"[poe-client] Target: {PathOfExileClientProcess.Describe(targetProcess)}");
 
         // When
-        using var process = LocalProcess.ByProcessId(targetProcess.Id);
+        using var process = LocalProcessRuntime.OpenProcess(targetProcess.Id);
         var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
         using var memory = process.MemoryOfModule(moduleName);
 
@@ -1021,7 +1032,12 @@ public sealed class LocalProcessClientIntegrationTests
             .GetOffsets(memory, Offsets.Patterns)
             .ToDictionary(x => x.Key.Name!, x => x.Value);
         var keypointOffsets = MemoryUtils
-            .GetOffsets(memory, Offsets.KeypointPatterns)
+            .GetOffsets(
+                memory,
+                SelectKeypointPatterns(
+                    Offsets.KeypointNames.GameStateTableShape,
+                    Offsets.KeypointNames.InGameStateAreaInstanceData,
+                    Offsets.KeypointNames.AreaInstanceEntityTreeRoot))
             .ToDictionary(x => x.Key.Name!, x => x.Value);
 
         var gameStatesGlobalSlot = ResolveRipRelativeSlot(memory, staticPatternOffsets[nameof(GameStates)]);
@@ -1066,7 +1082,7 @@ public sealed class LocalProcessClientIntegrationTests
         areaInstanceAddress.ShouldNotBe(IntPtr.Zero);
         entityTreeRoot.ShouldNotBe(IntPtr.Zero);
 
-        entityTreeRootOffset.ShouldBe(0x6C0);
+        entityTreeRootOffset.ShouldBe(Marshal.OffsetOf<AreaInstanceOffsets>(nameof(AreaInstanceOffsets.EntitiesCount)).ToInt32() - IntPtr.Size);
         entitiesCountOffset.ShouldBe(Marshal.OffsetOf<AreaInstanceOffsets>(nameof(AreaInstanceOffsets.EntitiesCount)).ToInt32());
         entitiesCount64.ShouldBe((ulong)entitiesCount);
         entitiesCount.ShouldBe(areaByStruct.EntitiesCount);
@@ -1078,7 +1094,7 @@ public sealed class LocalProcessClientIntegrationTests
 
     /// <summary>
     /// WHAT: Verifies entity id/status offsets are recovered from the AreaInstance entity-tree filter.
-    /// HOW: Resolves the destructor filter that walks AreaInstance +0x6C0, then reads the live player entity through recovered offsets.
+    /// HOW: Resolves the destructor filter that walks the AreaInstance entity tree, then reads the live player entity through recovered offsets.
     /// </summary>
     [Test]
     [Explicit("Requires a running Path Of Exile client with the character loaded in-world.")]
@@ -1090,7 +1106,7 @@ public sealed class LocalProcessClientIntegrationTests
         TestContext.Progress.WriteLine($"[poe-client] Target: {PathOfExileClientProcess.Describe(targetProcess)}");
 
         // When
-        using var process = LocalProcess.ByProcessId(targetProcess.Id);
+        using var process = LocalProcessRuntime.OpenProcess(targetProcess.Id);
         var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
         using var memory = process.MemoryOfModule(moduleName);
 
@@ -1098,7 +1114,14 @@ public sealed class LocalProcessClientIntegrationTests
             .GetOffsets(memory, Offsets.Patterns)
             .ToDictionary(x => x.Key.Name!, x => x.Value);
         var keypointOffsets = MemoryUtils
-            .GetOffsets(memory, Offsets.KeypointPatterns)
+            .GetOffsets(
+                memory,
+                SelectKeypointPatterns(
+                    Offsets.KeypointNames.GameStateTableShape,
+                    Offsets.KeypointNames.InGameStateAreaInstanceData,
+                    Offsets.KeypointNames.AreaInstanceLocalPlayers,
+                    Offsets.KeypointNames.AreaInstanceEntityTreeRoot,
+                    Offsets.KeypointNames.EntityIdentityFilter))
             .ToDictionary(x => x.Key.Name!, x => x.Value);
 
         var gameStatesGlobalSlot = ResolveRipRelativeSlot(memory, staticPatternOffsets[nameof(GameStates)]);
@@ -1167,7 +1190,7 @@ public sealed class LocalProcessClientIntegrationTests
         playerEntityAddress.ShouldBe(game.Player.Address);
 
         entityTreeRootOffsetFromFilter.ShouldBe(entityTreeRootOffset);
-        entityTreeRootOffsetFromFilter.ShouldBe(0x6C0);
+        entityTreeRootOffsetFromFilter.ShouldBe(Marshal.OffsetOf<AreaInstanceOffsets>(nameof(AreaInstanceOffsets.EntitiesCount)).ToInt32() - IntPtr.Size);
         treeNodeEntityPointerOffset.ShouldBe((byte)0x28);
         idOffset.ShouldBe(Marshal.OffsetOf<EntityOffsets>(nameof(EntityOffsets.Id)).ToInt32());
         statusOffset.ShouldBe(Marshal.OffsetOf<EntityOffsets>(nameof(EntityOffsets.IsValid)).ToInt32());
@@ -1201,7 +1224,7 @@ public sealed class LocalProcessClientIntegrationTests
         TestContext.Progress.WriteLine($"[poe-client] Target: {PathOfExileClientProcess.Describe(targetProcess)}");
 
         // When
-        using var process = LocalProcess.ByProcessId(targetProcess.Id);
+        using var process = LocalProcessRuntime.OpenProcess(targetProcess.Id);
         var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
         using var memory = process.MemoryOfModule(moduleName);
 
@@ -1295,7 +1318,7 @@ public sealed class LocalProcessClientIntegrationTests
         TestContext.Progress.WriteLine($"[poe-client] Target: {PathOfExileClientProcess.Describe(targetProcess)}");
 
         // When
-        using var process = LocalProcess.ByProcessId(targetProcess.Id);
+        using var process = LocalProcessRuntime.OpenProcess(targetProcess.Id);
         var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
         using var memory = process.MemoryOfModule(moduleName);
 
@@ -1445,7 +1468,7 @@ public sealed class LocalProcessClientIntegrationTests
         TestContext.Progress.WriteLine($"[poe-client] Target: {PathOfExileClientProcess.Describe(targetProcess)}");
 
         // When
-        using var process = LocalProcess.ByProcessId(targetProcess.Id);
+        using var process = LocalProcessRuntime.OpenProcess(targetProcess.Id);
         var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
         using var memory = process.MemoryOfModule(moduleName);
         var runtimeOffsets = RuntimeGameOffsets.GetOrResolve(memory);
@@ -1515,7 +1538,7 @@ public sealed class LocalProcessClientIntegrationTests
         TestContext.Progress.WriteLine($"[poe-client] Target: {PathOfExileClientProcess.Describe(targetProcess)}");
 
         // When
-        using var process = LocalProcess.ByProcessId(targetProcess.Id);
+        using var process = LocalProcessRuntime.OpenProcess(targetProcess.Id);
         var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
         using var memory = process.MemoryOfModule(moduleName);
 
@@ -1642,7 +1665,7 @@ public sealed class LocalProcessClientIntegrationTests
         TestContext.Progress.WriteLine($"[poe-client] Target: {PathOfExileClientProcess.Describe(targetProcess)}");
 
         // When
-        using var process = LocalProcess.ByProcessId(targetProcess.Id);
+        using var process = LocalProcessRuntime.OpenProcess(targetProcess.Id);
         var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
         using var memory = process.MemoryOfModule(moduleName);
 
@@ -1763,7 +1786,7 @@ public sealed class LocalProcessClientIntegrationTests
         TestContext.Progress.WriteLine($"[poe-client] Target: {PathOfExileClientProcess.Describe(targetProcess)}");
 
         // When
-        using var process = LocalProcess.ByProcessId(targetProcess.Id);
+        using var process = LocalProcessRuntime.OpenProcess(targetProcess.Id);
         var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
         using var memory = process.MemoryOfModule(moduleName);
 
@@ -1943,7 +1966,7 @@ public sealed class LocalProcessClientIntegrationTests
         TestContext.Progress.WriteLine($"[poe-client] Target: {PathOfExileClientProcess.Describe(targetProcess)}");
 
         // When
-        using var process = LocalProcess.ByProcessId(targetProcess.Id);
+        using var process = LocalProcessRuntime.OpenProcess(targetProcess.Id);
         var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
         using var memory = process.MemoryOfModule(moduleName);
 
@@ -1951,7 +1974,17 @@ public sealed class LocalProcessClientIntegrationTests
             .GetOffsets(memory, Offsets.Patterns)
             .ToDictionary(x => x.Key.Name!, x => x.Value);
         var keypointOffsets = MemoryUtils
-            .GetOffsets(memory, Offsets.KeypointPatterns)
+            .GetOffsets(
+                memory,
+                SelectKeypointPatterns(
+                    Offsets.KeypointNames.GameStateTableShape,
+                    Offsets.KeypointNames.InGameStateAreaInstanceData,
+                    Offsets.KeypointNames.AreaInstanceLocalPlayers,
+                    Offsets.KeypointNames.EntityComponentLookupShape,
+                    Offsets.KeypointNames.ComponentNameAndIndexEntryStride,
+                    Offsets.KeypointNames.LifeComponentVitalOffsets,
+                    Offsets.KeypointNames.LifeVitalConstructorShape,
+                    Offsets.KeypointNames.LifeVitalSharedConstructorShape))
             .ToDictionary(x => x.Key.Name!, x => x.Value);
 
         var gameStatesGlobalSlot = ResolveRipRelativeSlot(memory, staticPatternOffsets[nameof(GameStates)]);
@@ -2014,14 +2047,30 @@ public sealed class LocalProcessClientIntegrationTests
         var unknownStatId2Offset = memory.Read<byte>(Add(constructorShapeAddress, 0x31));
         var unknownStatId3Offset = memory.Read<byte>(Add(constructorShapeAddress, 0x39));
         var healthUnknownStatId3FromConstructor = memory.Read<int>(Add(constructorShapeAddress, 0x3A));
-        var manaOffsetFromConstructor = memory.Read<int>(Add(constructorShapeAddress, 0x90));
-        var manaUnknownStatId0Offset = memory.Read<byte>(Add(constructorShapeAddress, 0x97));
-        var manaUnknownStatId0FromConstructor = memory.Read<int>(Add(constructorShapeAddress, 0x98));
-        var manaUnknownStatId1Offset = memory.Read<byte>(Add(constructorShapeAddress, 0x9F));
-        var manaUnknownStatId1FromConstructor = memory.Read<int>(Add(constructorShapeAddress, 0xA0));
-        var manaUnknownStatId3FromConstructor = memory.Read<int>(Add(constructorShapeAddress, 0xC3));
-        var energyShieldOffsetFromConstructor = memory.Read<int>(Add(constructorShapeAddress, 0xFC));
-        var energyShieldUnknownStatId3FromConstructor = memory.Read<int>(Add(constructorShapeAddress, 0x114));
+        var manaOffsetFromConstructor = FindConstructorVitalOffset(memory, constructorShapeAddress, manaOffset);
+        var manaUnknownStatId0Offset = healthUnknownStatId0Offset;
+        var manaUnknownStatId0FromConstructor = ReadConstructorImmediateForVitalField(
+            memory,
+            constructorShapeAddress,
+            manaOffset,
+            manaUnknownStatId0Offset);
+        var manaUnknownStatId1Offset = healthUnknownStatId1Offset;
+        var manaUnknownStatId1FromConstructor = ReadConstructorImmediateForVitalField(
+            memory,
+            constructorShapeAddress,
+            manaOffset,
+            manaUnknownStatId1Offset);
+        var manaUnknownStatId3FromConstructor = ReadConstructorImmediateForVitalField(
+            memory,
+            constructorShapeAddress,
+            manaOffset,
+            unknownStatId3Offset);
+        var energyShieldOffsetFromConstructor = FindConstructorVitalOffset(memory, constructorShapeAddress, energyShieldOffset);
+        var energyShieldUnknownStatId3FromConstructor = ReadConstructorStackArgumentForVitalHelper(
+            memory,
+            constructorShapeAddress,
+            energyShieldOffset,
+            stackOffset: 0x20);
         var sharedLifeComponentPtrOffset = memory.Read<byte>(sharedConstructorShapeAddress);
         var sharedUnknownStatId3Offset = memory.Read<byte>(Add(sharedConstructorShapeAddress, 0x16));
         var sharedUnknownStatId0Offset = memory.Read<byte>(Add(sharedConstructorShapeAddress, 0x19));
@@ -2135,7 +2184,7 @@ public sealed class LocalProcessClientIntegrationTests
         TestContext.Progress.WriteLine($"[poe-client] Target: {PathOfExileClientProcess.Describe(targetProcess)}");
 
         // When
-        using var process = LocalProcess.ByProcessId(targetProcess.Id);
+        using var process = LocalProcessRuntime.OpenProcess(targetProcess.Id);
         var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
         using var memory = process.MemoryOfModule(moduleName);
 
@@ -2209,7 +2258,7 @@ public sealed class LocalProcessClientIntegrationTests
         TestContext.Progress.WriteLine($"[poe-client] Target: {PathOfExileClientProcess.Describe(targetProcess)}");
 
         // When
-        using var process = LocalProcess.ByProcessId(targetProcess.Id);
+        using var process = LocalProcessRuntime.OpenProcess(targetProcess.Id);
         var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
         using var memory = process.MemoryOfModule(moduleName);
 
@@ -2283,7 +2332,7 @@ public sealed class LocalProcessClientIntegrationTests
         TestContext.Progress.WriteLine($"[poe-client] Target: {PathOfExileClientProcess.Describe(targetProcess)}");
 
         // When
-        using var process = LocalProcess.ByProcessId(targetProcess.Id);
+        using var process = LocalProcessRuntime.OpenProcess(targetProcess.Id);
         var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
         using var memory = process.MemoryOfModule(moduleName);
 
@@ -2349,7 +2398,7 @@ public sealed class LocalProcessClientIntegrationTests
         TestContext.Progress.WriteLine($"[poe-client] Target: {PathOfExileClientProcess.Describe(targetProcess)}");
 
         // When
-        using var process = LocalProcess.ByProcessId(targetProcess.Id);
+        using var process = LocalProcessRuntime.OpenProcess(targetProcess.Id);
         var moduleName = Path.GetFileNameWithoutExtension(process.ProcessName) + ".exe";
         using var memory = process.MemoryOfModule(moduleName);
 
@@ -2554,6 +2603,186 @@ public sealed class LocalProcessClientIntegrationTests
         return entries.ToArray();
     }
 
+    private static int FindConstructorVitalOffset(IMemory memory, IntPtr constructorShapeAddress, int expectedVitalOffset)
+    {
+        var (_, _, _, vitalOffset) = FindConstructorVitalLea(memory, constructorShapeAddress, expectedVitalOffset);
+        return vitalOffset;
+    }
+
+    private static int ReadConstructorImmediateForVitalField(
+        IMemory memory,
+        IntPtr constructorShapeAddress,
+        int vitalOffset,
+        int vitalFieldOffset)
+    {
+        var (window, leaOffset, targetRegister, _) = FindConstructorVitalLea(memory, constructorShapeAddress, vitalOffset);
+        var searchEnd = Math.Min(window.Length, leaOffset + 0x90);
+        for (var offset = leaOffset + 7; offset < searchEnd; offset++)
+        {
+            if (!TryReadMovDwordImmediate(window, offset, out var baseRegister, out var displacement, out var immediate))
+            {
+                continue;
+            }
+
+            if (baseRegister == targetRegister &&
+                displacement == vitalFieldOffset)
+            {
+                return immediate;
+            }
+        }
+
+        throw new InvalidOperationException(
+            $"Could not find constructor immediate for vital 0x{vitalOffset:X} field 0x{vitalFieldOffset:X}.");
+    }
+
+    private static int ReadConstructorStackArgumentForVitalHelper(
+        IMemory memory,
+        IntPtr constructorShapeAddress,
+        int vitalOffset,
+        int stackOffset)
+    {
+        var (window, leaOffset, _, _) = FindConstructorVitalLea(memory, constructorShapeAddress, vitalOffset);
+        var searchStart = Math.Max(0, leaOffset - 0x60);
+        for (var offset = leaOffset; offset >= searchStart; offset--)
+        {
+            if (!TryReadMovDwordImmediate(window, offset, out var baseRegister, out var displacement, out var immediate))
+            {
+                continue;
+            }
+
+            if (baseRegister == 4 &&
+                displacement == stackOffset)
+            {
+                return immediate;
+            }
+        }
+
+        throw new InvalidOperationException(
+            $"Could not find constructor stack argument at [rsp + 0x{stackOffset:X}] for vital 0x{vitalOffset:X}.");
+    }
+
+    private static (byte[] Window, int LeaOffset, int TargetRegister, int VitalOffset) FindConstructorVitalLea(
+        IMemory memory,
+        IntPtr constructorShapeAddress,
+        int expectedVitalOffset)
+    {
+        var window = memory.Read<byte>(Add(constructorShapeAddress, -3), 0x220);
+        for (var offset = 0; offset <= window.Length - 7; offset++)
+        {
+            var rex = window[offset];
+            if ((rex & 0xF0) != 0x40 ||
+                window[offset + 1] != 0x8D)
+            {
+                continue;
+            }
+
+            var modRm = window[offset + 2];
+            var mode = modRm >> 6;
+            var rm = modRm & 0x07;
+            if (mode != 2 ||
+                rm != 6)
+            {
+                continue;
+            }
+
+            var vitalOffset = BitConverter.ToInt32(window, offset + 3);
+            if (vitalOffset != expectedVitalOffset)
+            {
+                continue;
+            }
+
+            var targetRegister = ((modRm >> 3) & 0x07) + ((rex & 0x04) != 0 ? 8 : 0);
+            return (window, offset, targetRegister, vitalOffset);
+        }
+
+        throw new InvalidOperationException($"Could not find constructor LEA for vital offset 0x{expectedVitalOffset:X}.");
+    }
+
+    private static bool TryReadMovDwordImmediate(
+        byte[] bytes,
+        int offset,
+        out int baseRegister,
+        out int displacement,
+        out int immediate)
+    {
+        baseRegister = 0;
+        displacement = 0;
+        immediate = 0;
+
+        var cursor = offset;
+        if (cursor >= bytes.Length)
+        {
+            return false;
+        }
+
+        var rex = (byte)0;
+        if ((bytes[cursor] & 0xF0) == 0x40)
+        {
+            rex = bytes[cursor++];
+        }
+
+        if (cursor + 2 >= bytes.Length ||
+            bytes[cursor++] != 0xC7)
+        {
+            return false;
+        }
+
+        var modRm = bytes[cursor++];
+        var mode = modRm >> 6;
+        var opcodeExtension = (modRm >> 3) & 0x07;
+        var rm = modRm & 0x07;
+        if (opcodeExtension != 0)
+        {
+            return false;
+        }
+
+        if (rm == 4)
+        {
+            if (cursor >= bytes.Length)
+            {
+                return false;
+            }
+
+            var sib = bytes[cursor++];
+            baseRegister = (sib & 0x07) + ((rex & 0x01) != 0 ? 8 : 0);
+        }
+        else
+        {
+            baseRegister = rm + ((rex & 0x01) != 0 ? 8 : 0);
+        }
+
+        switch (mode)
+        {
+            case 1:
+                if (cursor + 1 + sizeof(int) > bytes.Length)
+                {
+                    return false;
+                }
+
+                displacement = unchecked((sbyte)bytes[cursor++]);
+                break;
+            case 2:
+                if (cursor + sizeof(int) + sizeof(int) > bytes.Length)
+                {
+                    return false;
+                }
+
+                displacement = BitConverter.ToInt32(bytes, cursor);
+                cursor += sizeof(int);
+                break;
+            default:
+                return false;
+        }
+
+        if (cursor + sizeof(int) > bytes.Length)
+        {
+            return false;
+        }
+
+        immediate = BitConverter.ToInt32(bytes, cursor);
+        return true;
+    }
+
     private static IEnumerable<int> FindBytePatternMatches(byte[] buffer, string pattern)
     {
         var parsedPattern = ParseBytePattern(pattern);
@@ -2591,6 +2820,14 @@ public sealed class LocalProcessClientIntegrationTests
             .Select(token => token is "?" or "??"
                 ? (byte?)null
                 : Convert.ToByte(token, 16))
+            .ToArray();
+    }
+
+    private static IBytePattern[] SelectKeypointPatterns(params string[] names)
+    {
+        var requestedNames = new HashSet<string>(names, StringComparer.Ordinal);
+        return Offsets.KeypointPatterns
+            .Where(pattern => pattern.Name != null && requestedNames.Contains(pattern.Name))
             .ToArray();
     }
 

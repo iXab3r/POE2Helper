@@ -8,6 +8,6 @@ namespace CheatCartridge.GameHelper.GameOffsets.States.InGameState;
 public struct ComponentLookUpStruct
 {
     [FrameFormatField("name_and_index_bucket")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "ComponentLookup.name_and_index_bucket; Bucket/vector of component-name/index entries.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "ComponentLookup.name_and_index_bucket; Bucket/vector of component-name/index entries.")]
     [FieldOffset(0x28)] public StdBucket ComponentsNameAndIndex;
 }

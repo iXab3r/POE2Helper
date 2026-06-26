@@ -7,15 +7,15 @@ namespace CheatCartridge.GameHelper.Natives;
 public struct StdVector
 {
     [FrameFormatField("first")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "StdVector.first; First element pointer.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "StdVector.first; First element pointer.")]
     public IntPtr First;
 
     [FrameFormatField("last")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "StdVector.last; One-past-last element pointer.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "StdVector.last; One-past-last element pointer.")]
     public IntPtr Last;
 
     [FrameFormatField("end")]
-    [FrameFormatGenerated("poe-game-model.sha256-c5da3833", "2026-06-13T12:25:29.4645730+00:00", "StdVector.end; One-past-capacity pointer.")]
+    [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "StdVector.end; One-past-capacity pointer.")]
     public IntPtr End;
 
     /// <summary>
