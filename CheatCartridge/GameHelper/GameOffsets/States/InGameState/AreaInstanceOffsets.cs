@@ -25,24 +25,22 @@ public struct AreaInstanceOffsets
 
     /// <summary>
     /// Before this ptr there are 28 zeroes
-    /// 0xA00 -> 0xA08 (+8) -> 0xA10 (+8)
+    /// Latest observed slide:
+    /// 0x588 -> 0x5A0 (+0x18) -> 0x5A8 (+8)
     /// </summary>
     [FrameFormatField("local_players")]
     [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "AreaInstance.local_players; Vector of local player entity pointers.")]
-    [FieldOffset(0x5A0)] public StdVector LocalPlayers;
+    [FieldOffset(0x5A8)] public StdVector LocalPlayers;
 
     /// <summary>
     /// Count for the AreaInstance-owned entity tree.
     ///
-    /// RE evidence for build sha256-c5da3833:
-    /// FUN_14206E780 initializes the first entity tree container at +0x6B0.
-    /// The constructor sets the tree root/sentinel pointer at +0x6C0 and clears
-    /// the adjacent qword count at +0x6C8. Offsets.KeypointNames.AreaInstanceEntityTreeRoot
-    /// recovers +0x6C0 from code, then tests derive this field as +0x6C0 + 8.
+    /// Latest observed slide:
+    /// 0x6C8 -> 0x6E0 (+0x18) -> 0x6E8 (+8)
     ///
     /// See docs/PoE/RE/builds/sha256-c5da3833/PathOfExileSteam/game-states/AreaInstanceScalars.evidence.md.
     /// </summary>
     [FrameFormatField("entities_count")]
     [FrameFormatGenerated("poe-game-model.sha256-1abda874", "2026-06-26T01:51:27.2215998+00:00", "AreaInstance.entities_count; Entity-tree count stored after the root pointer.")]
-    [FieldOffset(0x6E0)] public uint EntitiesCount;
+    [FieldOffset(0x6E8)] public uint EntitiesCount;
 }
