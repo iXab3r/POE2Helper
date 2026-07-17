@@ -24,9 +24,9 @@ public struct AreaInstanceOffsets
     
     /// <summary>
     /// Before this ptr there are 28 zeroes
-    /// 0xA00 -> 0xA08 (+8) -> 0xA10 (+8)
+    /// 0x588 -> 0x5A0 (+0x18) -> 0x5A8 (+8)
     /// </summary>
-    [FieldOffset(0x588)] public StdVector LocalPlayers;
+    [FieldOffset(0x5A8)] public StdVector LocalPlayers;
     
     /// <summary>
     /// Some oscillating value, 0.07 - 0.30, ping?
@@ -42,7 +42,7 @@ public struct AreaInstanceOffsets
     
     /// <summary>
     /// In Clearfell at tp ~30-50
-    /// 0xB58 -> 0xB60 (+8) -> 0xB68 (+8) -> 0x6C8 (-0x4A0)
+    /// 0xB58 -> 0xB60 (+8) -> 0xB68 (+8) -> 0x6E8 (-0x480)
     /// </summary>
-    [FieldOffset(0x6C8)] public uint EntitiesCount;
+    [FieldOffset(0x6E8)] public uint EntitiesCount;
 }
