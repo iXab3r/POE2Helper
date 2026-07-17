@@ -14,10 +14,10 @@ public struct InGameStateOffset
     [FieldOffset(0x290)] public IntPtr AreaInstanceData;
     
     /// <summary>
-    /// Increasing number, probably count of ms elapsed since computer/client started
-    /// 0x328 => 0x400 (+D8)
+    /// Increasing integer timer maintained by the InGameState tick/update path.
+    /// Static RE and live reads both showed this is a 32-bit value.
     /// </summary>
-    [FieldOffset(0x400)] public IntPtr MsElapsed;
+    [FieldOffset(0x400)] public int MsElapsed;
     
     /// <summary>
     /// Contains ptr to Unicode string containing login server host.

@@ -4,7 +4,21 @@ namespace CheatCartridge.GameHelper.GameOffsets.Objects.Components;
 public struct VitalStruct
 {
     [FieldOffset(0x00)] public IntPtr VtablePtr;
-    [FieldOffset(0x08)] public IntPtr PtrToLifeComponent;
+
+    /// <summary>
+    ///     Constructor-written stat id. Exact runtime meaning is not proven yet.
+    /// </summary>
+    [FieldOffset(0x08)] public int UnknownStatId0;
+
+    /// <summary>
+    ///     Constructor-written stat id. Exact runtime meaning is not proven yet.
+    /// </summary>
+    [FieldOffset(0x0C)] public int UnknownStatId1;
+
+    /// <summary>
+    ///     Back pointer to the owning Life component.
+    /// </summary>
+    [FieldOffset(0x10)] public IntPtr LifeComponentPtr;
 
     /// <summary>
     ///     e.g. Clarity reserve flat Vital
@@ -19,10 +33,21 @@ public struct VitalStruct
     [FieldOffset(0x1C)] public int ReservedPercent;
 
     /// <summary>
-    ///     This is greater than zero if Vital is regenerating
-    ///     For value = 0 or less than 0, Vital isn't regenerating
+    ///     Stat id used by the game when refreshing this vital's total.
     /// </summary>
-    [FieldOffset(0x28)] public float Regeneration;
+    [FieldOffset(0x20)] public int TotalStatId;
+
+    /// <summary>
+    ///     Constructor-written stat id. Exact runtime meaning is not proven yet.
+    /// </summary>
+    [FieldOffset(0x24)] public int UnknownStatId2;
+
+    /// <summary>
+    ///     Constructor-written stat id. This used to be interpreted as a float
+    ///     regeneration value, but static RE showed integer ids written here.
+    /// </summary>
+    [FieldOffset(0x28)] public int UnknownStatId3;
+
     [FieldOffset(0x34)] public int Total;
     [FieldOffset(0x38)] public int Current;
 

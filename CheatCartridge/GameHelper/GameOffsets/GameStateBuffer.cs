@@ -6,7 +6,7 @@ namespace CheatCartridge.GameHelper.GameOffsets;
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 public unsafe struct GameStateBuffer
 {
-    public const int TOTAL_STATES = 12;
+    public const int TOTAL_STATES = 13;
 
     private fixed byte _data[TOTAL_STATES * 16];
 
