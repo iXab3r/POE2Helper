@@ -1,11 +1,13 @@
 # EyeAuras PoeHelper
+
+Contributor and agent guidance: [AGENTS.md](AGENTS.md).
 ![Img](https://s3.eyeauras.net/media/2024/12/NVIDIA_Overlay_h5x9BnjFNpbtypN5.png)
 
 ## [Download here](https://eyeauras.net/share/S20241213181401RaWLZLE430e6) or import [this link](https://eyeauras.net/share/S20241213181401RaWLZLE430e6) into EyeAuras for further customization.
 
 This is a small, **free-for-all** tool, which intends to test/verify [EyeAuras](https://eyeauras.net/) memory reading API in practice.
 [YouTube Demo for v0.3](https://youtu.be/SOkuX6xluww)
-Currently its primary role is propagating HP/MP/ES levels to EyeAuras Behavior Trees. In the future I may add cooldown/hp/buffs tracking as well.
+Its primary role is propagating HP/MP/ES levels to EyeAuras Behavior Trees for conditional potion and skill use.
 
 ## **It does not intent to compete with GameHelper/ExileCore/PoeHUD/etc** 
 There will be no plugins, there will be no radar and other excellent features which GH/EC have. 
