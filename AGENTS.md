@@ -6,6 +6,8 @@ Do not hand-edit `CheatCartridge/generated/`: its [README](CheatCartridge/genera
 
 Memory offsets and struct layouts in `CheatCartridge/GameHelper/GameOffsets/` depend on the target game build. Compilation does not prove runtime offsets or HP/MP/ES behavior; record the target client and observations when changing them. Do not update offsets or claim current-client compatibility merely because documentation is old.
 
+EyeAuras supplies the runtime services; generated host placeholders are not a standalone functional smoke test. Preserve the aura paths and behavior-tree variables in `BotBrain.cs` when changing integration.
+
 For code changes, use the checked-in project/solution and inspect its actual SDK/feed requirements. Report separately what compiled and what was verified in the EyeAuras/game environment. Documentation-only changes need factual, link, and diff checks; explicitly report runtime checks not performed.
 
 ## Independent architecture and review

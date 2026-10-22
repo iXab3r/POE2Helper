@@ -5,9 +5,8 @@ and I felt that reinventing the wheel would hurt considering level of expertise 
 This code will never-ever be covering as many aspects of the game as GH/ExileCore/PoeHUD do. 
 It's primary role and responsibility is provide some data for EyeAuras behavior trees. 
 There will be no radar or anything similar. 
-Will probably add some cooldown-tracking, potion and, maybe, buff-tracking in the future. 
+The current helper supplies HP/MP/ES data; potion behavior is configured through the EyeAuras behavior tree.
 
-I thought about integration with GH using plugin and this could be the future approach. 
 
 # Credits
 - [`GameHelper`](https://www.ownedcore.com/forums/members/1040190-gamehelper.html) - author of [GameHelper](https://www.ownedcore.com/forums/mmo/path-of-exile/poe-bots-programs/953353-gamehelper-light-version-of-poehud-exile-api-351.html)

@@ -7,7 +7,7 @@ Contributor and agent guidance: [AGENTS.md](AGENTS.md).
 
 This is a small, **free-for-all** tool, which intends to test/verify [EyeAuras](https://eyeauras.net/) memory reading API in practice.
 [YouTube Demo for v0.3](https://youtu.be/SOkuX6xluww)
-Currently its primary role is propagating HP/MP/ES levels to EyeAuras Behavior Trees. In the future I may add cooldown/hp/buffs tracking as well.
+Its primary role is propagating HP/MP/ES levels to EyeAuras Behavior Trees for conditional potion and skill use.
 
 ## **It does not intent to compete with GameHelper/ExileCore/PoeHUD/etc** 
 There will be no plugins, there will be no radar and other excellent features which GH/EC have. 
