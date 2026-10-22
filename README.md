@@ -1,4 +1,6 @@
 # EyeAuras PoeHelper
+
+Contributor and agent guidance: [AGENTS.md](AGENTS.md).
 ![Img](https://s3.eyeauras.net/media/2024/12/NVIDIA_Overlay_h5x9BnjFNpbtypN5.png)
 
 ## [Download here](https://eyeauras.net/share/S20241213181401RaWLZLE430e6) or import [this link](https://eyeauras.net/share/S20241213181401RaWLZLE430e6) into EyeAuras for further customization.
